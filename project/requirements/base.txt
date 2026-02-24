@@ -1,0 +1,54 @@
+Django
+postgres
+django-countries
+pypdf
+environs[django]
+django-anymail       # to send emails via any email provider
+django-storages[google]      # for handling static files in production juch as storing files on a remote server like AWS S3 or google cloud storage
+google-cloud-storage # for Google Cloud Storage backend
+googlemaps
+google-cloud-secret-manager
+django-select2
+django-redis
+django-cors-headers
+sentry-sdk[django]
+python-dateutil
+django-recaptcha
+django-import-export
+whitenoise
+django-storages[google]      # for handling static files in production such as storing files on a remote server like AWS S3 or google cloud storage
+django-cors-headers
+django-unfold
+langchain
+langchain-core
+langchain-google-genai
+django-axes[ipware]
+django-import-export
+tweepy[async]
+psycopg[binary,pool]
+openai
+pgvector
+nh3
+djangorestframework
+djangorestframework-simplejwt
+cryptography
+# facebook_business
+stripe               # for payments
+mutagen
+django-taggit  # not in use and need to remove the tales from the db before we can remove it
+# celery[redis]
+# easy-thumbnails
+# django-filer
+# wagtail
+Pillow
+# django-htmx
+# django-widget-tweaks # to add css classes and other attributes directrly in the html to elements given to us from a django form
+# django-allauth       # for user authentication
+# twilio
+# channels[daphne]             # for websockets
+# channels_redis       # for redis to work with channels websockets
+# django-phonenumber-field[phonenumbers]
+# django-prose-editor # switch to this editor from the django-ckeditor
+# boto3                # for AWS S3
+# celery
+# django-hosts

@@ -1,0 +1,20 @@
+{% extends "base/home.html" %}
+
+{% block title %}Payment Canceled{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-red-600 mb-6">Upgrade Canceled</h1>
+
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <p class="text-lg mb-4">Your upgrade process was canceled.</p>
+        <p class="mb-6">You can try upgrading again whenever you're ready.</p>
+        <a href="{% url 'subscriptions_app:upgrade_page' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2">
+            Try Again
+        </a>
+        <a href="{% url 'brain_dump_list' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Go to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% comment %}
+This fragment renders a list of new chat messages (typically user + assistant)
+to be appended to the chat display via HTMX.
+Context variable expected: `new_messages` (a list of message dictionaries)
+{% endcomment %}
+{% for message in new_messages %}
+    {# Add the chat-message-fade-in class for the animation #}
+    <div class="chat-message-fade-in p-3 rounded-lg max-w-xs md:max-w-md {% if message.sender == 'user' %}bg-green-100 text-gray-800 self-end ml-auto{% else %}bg-blue-100 text-gray-800 self-start{% endif %}">
+        <p>{{ message.text|linebreaksbr }}</p> {# Use linebreaksbr for potential multi-line responses #}
+    </div>
+{% endfor %}

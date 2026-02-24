@@ -1,0 +1,147 @@
+{% load static %}
+
+<!-- New Navigation Bar with Alpine.js for mobile menu toggle -->
+        <header class="bg-white" x-data="{ mobileMenuOpen: false }">
+          <nav class="mx-auto flex max-w-7xl items-center justify-between gap-x-6 p-6 lg:px-8" aria-label="Global">
+            <div class="flex lg:flex-1">
+              <a href="{% url 'brain_dump' %}" class="-m-1.5 p-1.5">
+                <span class="sr-only">Mind Post</span>
+                <img class="h-10 w-auto" src="{% static 'images/full_logo_image.jpeg' %}" alt="Mind Post Logo"> {# Increased logo size #}
+              </a>
+            </div>
+            <div class="hidden lg:flex lg:gap-x-8"> {# Increased gap #}
+              {% if user.is_authenticated %}
+                {# Added padding, rounding, hover effects, and transitions - Increased size #}
+                <a href="{% url 'brain_dump' %}" class="rounded-md px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-100 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-2.5"> {# Increased padding, text size, gap #}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+                  </svg>
+                  New Dump
+                </a>
+                <a href="{% url 'brain_dump_list' %}" class="rounded-md px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-100 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-2.5"> {# Increased padding, text size, gap #}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+                  </svg>
+                  My Dumps
+                </a>
+                <a href="{% url 'chat' %}" class="rounded-md px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-100 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-2.5"> {# Increased padding, text size, gap #}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                  </svg>
+                  Chat
+                </a>
+                <a href="{% url 'posts' %}" class="rounded-md px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-100 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-2.5"> {# Increased padding, text size, gap #}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                  </svg>
+                  My Posts
+                </a>
+                <a href="{% url 'settings' %}" class="rounded-md px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-100 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-2.5"> {# Increased padding, text size, gap #}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  </svg>
+                  Settings
+                </a>
+              {% else %}
+                {# Placeholder links for non-authenticated users if needed - Added padding, rounding, hover effects, and transitions #}
+                {% comment %} <a href="#" class="rounded-md px-3 py-2 text-sm/6 font-semibold text-gray-900 hover:bg-gray-100 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out">Product</a>
+                <a href="#" class="rounded-md px-3 py-2 text-sm/6 font-semibold text-gray-900 hover:bg-gray-100 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out">Features</a> {% endcomment %}
+              {% endif %}
+            </div>
+            <div class="flex flex-1 items-center justify-end gap-x-8"> {# Increased gap #}
+              {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="hidden text-base font-semibold text-gray-900 lg:block">Log out</a> {# Increased text size #}
+              {% else %}
+                <a href="{% url 'login' %}" class="hidden text-base font-semibold text-gray-900 lg:block">Log in</a> {# Increased text size #}
+                <a href="{% url 'signup' %}" class="rounded-md bg-indigo-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign up</a> {# Increased padding and text size #}
+              {% endif %}
+              {% comment %} <a href="{% url 'privacy_policy' %}" class="hidden text-base font-semibold text-gray-900 lg:block">Privacy Policy</a> {# Increased text size #} {% endcomment %}
+            </div>
+            <div class="flex lg:hidden">
+              <button type="button" @click="mobileMenuOpen = true" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+                <span class="sr-only">Open main menu</span>
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"> {# Increased icon size #}
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              </button>
+            </div>
+          </nav>
+          
+          <!-- Mobile menu, show/hide based on menu open state using Alpine.js -->
+          <div class="lg:hidden" role="dialog" aria-modal="true" x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+            <!-- Background backdrop, show/hide based on slide-over state -->
+            <div class="fixed inset-0 z-10 bg-gray-500 bg-opacity-25" x-show="mobileMenuOpen" @click="mobileMenuOpen = false"></div>
+            
+            <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-8 py-8 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10" x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"> {# Increased padding #}
+              <div class="flex items-center gap-x-8"> {# Increased gap #}
+                <a href="{% url 'brain_dump' %}" class="-m-1.5 p-1.5">
+                  <span class="sr-only">Mind Post</span>
+                  <img class="h-10 w-auto" src="{% static 'images/full_logo_image.jpeg' %}" alt="Mind Post Logo"> {# Increased logo size #}
+                </a>
+                {% if not user.is_authenticated %}
+                {# Use primary button style from header template for mobile signup - Increased size #}
+                <a href="{% url 'signup' %}" class="ml-auto rounded-md bg-indigo-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign up</a> {# Increased padding and text size #}
+                {% endif %}
+                <button type="button" @click="mobileMenuOpen = false" class="-m-2.5 rounded-md p-2.5 text-gray-700">
+                  <span class="sr-only">Close menu</span>
+                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"> {# Increased icon size #}
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div class="mt-8 flow-root"> {# Increased margin #}
+                <div class="-my-6 divide-y divide-gray-500/10">
+                  <div class="space-y-3 py-8"> {# Increased spacing and padding #}
+                    {% if user.is_authenticated %}
+                      {# Added hover text color and transitions - Increased size #}
+                      <a href="{% url 'brain_dump' %}" class="-mx-3 block rounded-lg px-4 py-3 text-lg font-semibold text-gray-900 hover:bg-gray-50 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-3.5"> {# Increased padding, text size, gap #}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+                        </svg>
+                        New Dump
+                      </a>
+                      <a href="{% url 'brain_dump_list' %}" class="-mx-3 block rounded-lg px-4 py-3 text-lg font-semibold text-gray-900 hover:bg-gray-50 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-3.5"> {# Increased padding, text size, gap #}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+                        </svg>
+                        My Dumps
+                      </a>
+                      <a href="{% url 'chat' %}" class="-mx-3 block rounded-lg px-4 py-3 text-lg font-semibold text-gray-900 hover:bg-gray-50 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-3.5"> {# Increased padding, text size, gap #}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                        </svg>
+                        Chat
+                      </a>
+                      <a href="{% url 'posts' %}" class="-mx-3 block rounded-lg px-4 py-3 text-lg font-semibold text-gray-900 hover:bg-gray-50 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-3.5"> {# Increased padding, text size, gap #}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                          <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                        </svg>
+                        My Posts
+                      </a>
+                      <a href="{% url 'settings' %}" class="-mx-3 block rounded-lg px-4 py-3 text-lg font-semibold text-gray-900 hover:bg-gray-50 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out flex items-center gap-x-3.5"> {# Increased padding, text size, gap #}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5"> {# Increased icon size #}
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        Settings
+                      </a>
+                    {% else %}
+                      {# Added hover text color and transitions #}
+                      {% comment %} <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out">Product</a>
+                      <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 hover:text-indigo-600 hover:scale-105 transition-all duration-150 ease-in-out">Features</a> {% endcomment %}
+                    {% endif %}
+                  </div>
+                  <div class="py-8"> {# Increased padding #}
+                    {% if user.is_authenticated %}
+                      <a href="{% url 'logout' %}" class="-mx-3 block rounded-lg px-4 py-3.5 text-lg font-semibold text-gray-900 hover:bg-gray-50">Log out</a> {# Increased padding and text size #}
+                    {% else %}
+                      <a href="{% url 'login' %}" class="-mx-3 block rounded-lg px-4 py-3.5 text-lg font-semibold text-gray-900 hover:bg-gray-50">Log in</a> {# Increased padding and text size #}
+                    {% endif %}
+                    <a href="{% url 'privacy_policy' %}" class="-mx-3 block rounded-lg px-4 py-3.5 text-lg font-semibold text-gray-900 hover:bg-gray-50">Privacy Policy</a> {# Increased padding and text size #}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>

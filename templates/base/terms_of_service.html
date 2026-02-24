@@ -1,0 +1,147 @@
+{% extends "base/home.html" %}
+
+{% block content %}
+<div class="bg-white px-6 py-32 lg:px-8">
+  <div class="mx-auto max-w-3xl text-base/7 text-gray-700">
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl mb-6 text-pretty">Terms of Service</h1>
+    <p class="mb-4">Last updated: {{ "now"|date:"F j, Y" }}</p>
+
+    <p class="mb-4">These Terms of Service ("<strong>Terms</strong>") govern your use of the Mind Post website and services ("<strong>Services</strong>") operated by Mind Post ("<strong>we</strong>," "<strong>us</strong>," or "<strong>our</strong>").</p>
+
+    <p class="mb-4">By accessing or using our Services, you agree to be bound by these Terms. If you disagree with any part of these terms, then you may not access the Services.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">1. ACCEPTANCE OF TERMS</h2>
+    <p class="mb-4">By creating an account or using Mind Post, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree to these terms, you must not use our Services.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">2. DESCRIPTION OF SERVICE</h2>
+    <p class="mb-4">Mind Post is a subscription-based service that allows users to:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>Record audio notes and thoughts</li>
+        <li>Automatically transcribe audio recordings using AI technology</li>
+        <li>Generate social media posts from transcribed content</li>
+        <li>Manage and organize their content</li>
+        <li>Connect social media accounts for posting</li>
+    </ul>
+    <p class="mb-4">Our Services utilize third-party AI providers including OpenAI and Google Cloud AI to process your audio recordings and generate content.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">3. ACCOUNT CREATION AND ELIGIBILITY</h2>
+    <p class="mb-4">To use our Services, you must:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>Be at least 18 years old</li>
+        <li>Provide accurate and complete registration information</li>
+        <li>Maintain the security of your account credentials</li>
+        <li>Notify us immediately of any unauthorized use of your account</li>
+    </ul>
+    <p class="mb-4">You are responsible for all activities that occur under your account. We reserve the right to refuse service or terminate accounts at our discretion.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">4. SUBSCRIPTION AND BILLING</h2>
+    <p class="mb-4">Mind Post operates on a subscription model:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li><strong>Subscription Required:</strong> Access to our Services requires an active paid subscription</li>
+        <li><strong>Billing:</strong> Subscriptions are billed on a recurring basis as selected during signup</li>
+        <li><strong>Payment:</strong> All payments are processed through our official website at mindpost.site</li>
+        <li><strong>No In-App Purchases:</strong> Our mobile application does not use Apple's In-App Purchase system</li>
+        <li><strong>Cancellation:</strong> You may cancel your subscription at any time through your account settings</li>
+        <li><strong>Refunds:</strong> Refunds are handled on a case-by-case basis at our discretion</li>
+    </ul>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">5. ACCEPTABLE USE</h2>
+    <p class="mb-4">You agree to use our Services only for lawful purposes and in accordance with these Terms. You agree NOT to:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>Upload content that is illegal, harmful, threatening, abusive, or offensive</li>
+        <li>Violate any applicable laws or regulations</li>
+        <li>Infringe upon the intellectual property rights of others</li>
+        <li>Attempt to gain unauthorized access to our systems</li>
+        <li>Use the service to spam or send unsolicited messages</li>
+        <li>Reverse engineer or attempt to extract our proprietary technology</li>
+        <li>Share your account credentials with others</li>
+    </ul>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">6. USER CONTENT</h2>
+    <p class="mb-4">You retain ownership of the content you create using our Services, including your audio recordings and generated posts. However, by using our Services, you grant us:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>The right to process your content through our AI services (OpenAI, Google) to provide the core functionality</li>
+        <li>The right to store your content securely in our systems</li>
+        <li>The right to transmit your content to connected social media platforms when you choose to post</li>
+    </ul>
+    <p class="mb-4">You are solely responsible for the content you create and any consequences of posting it publicly.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">7. THIRD-PARTY SERVICES</h2>
+    <p class="mb-4">Our Services integrate with third-party providers:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li><strong>AI Processing:</strong> We use OpenAI and Google Cloud AI for transcription and content generation</li>
+        <li><strong>Social Media:</strong> We may integrate with social media platforms for posting functionality</li>
+        <li><strong>Payment Processing:</strong> We use third-party payment processors for billing</li>
+    </ul>
+    <p class="mb-4">These third-party services have their own terms and privacy policies. We are not responsible for their practices or availability.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">8. SERVICE AVAILABILITY</h2>
+    <p class="mb-4">We strive to provide reliable service but cannot guarantee 100% uptime. Our Services may be temporarily unavailable due to:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>Scheduled maintenance</li>
+        <li>Technical issues</li>
+        <li>Third-party service disruptions</li>
+        <li>Force majeure events</li>
+    </ul>
+    <p class="mb-4">We will make reasonable efforts to notify users of planned downtime when possible.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">9. INTELLECTUAL PROPERTY</h2>
+    <p class="mb-4">The Mind Post platform, including its design, features, and underlying technology, is owned by us and protected by intellectual property laws. You may not:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>Copy, modify, or distribute our software or content</li>
+        <li>Use our trademarks or branding without permission</li>
+        <li>Create derivative works based on our Services</li>
+    </ul>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">10. TERMINATION</h2>
+    <p class="mb-4">Either party may terminate this agreement:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li><strong>By You:</strong> Cancel your subscription at any time through your account settings</li>
+        <li><strong>By Us:</strong> Terminate your account for violations of these Terms or at our discretion</li>
+    </ul>
+    <p class="mb-4">Upon termination, your access to the Services will cease, and we will delete your data according to our data retention policies outlined in our Privacy Policy.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">11. DISCLAIMERS AND LIMITATION OF LIABILITY</h2>
+    <p class="mb-4">TO THE MAXIMUM EXTENT PERMITTED BY LAW:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>Our Services are provided "AS IS" without warranties of any kind</li>
+        <li>We disclaim all warranties, express or implied, including merchantability and fitness for a particular purpose</li>
+        <li>We are not liable for any indirect, incidental, special, or consequential damages</li>
+        <li>Our total liability to you shall not exceed the amount you paid for the Services in the 12 months preceding the claim</li>
+        <li>We are not responsible for content generated by AI services or decisions made based on that content</li>
+    </ul>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">12. INDEMNIFICATION</h2>
+    <p class="mb-4">You agree to indemnify and hold harmless Mind Post from any claims, damages, or expenses arising from:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>Your use of the Services</li>
+        <li>Your violation of these Terms</li>
+        <li>Your content or its publication</li>
+        <li>Your violation of any third-party rights</li>
+    </ul>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">13. PRIVACY</h2>
+    <p class="mb-4">Your privacy is important to us. Our collection and use of personal information is governed by our Privacy Policy, which is incorporated into these Terms by reference. Please review our Privacy Policy to understand our practices.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">14. GOVERNING LAW</h2>
+    <p class="mb-4">These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction], without regard to its conflict of law provisions. Any disputes arising under these Terms shall be subject to the exclusive jurisdiction of the courts in [Your Jurisdiction].</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">15. CHANGES TO TERMS</h2>
+    <p class="mb-4">We reserve the right to modify these Terms at any time. We will notify users of material changes via email or through the Services. Continued use of the Services after changes constitutes acceptance of the new Terms.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">16. SEVERABILITY</h2>
+    <p class="mb-4">If any provision of these Terms is found to be unenforceable, the remaining provisions will remain in full force and effect.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">17. ENTIRE AGREEMENT</h2>
+    <p class="mb-4">These Terms, together with our Privacy Policy, constitute the entire agreement between you and Mind Post regarding the use of our Services.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">18. CONTACT INFORMATION</h2>
+    <p class="mb-4">If you have any questions about these Terms of Service, please contact us at:</p>
+    <p class="mb-4"><strong>Email:</strong> contact@mindpost.site</p>
+    <p class="mb-4"><strong>Website:</strong> <a href="https://mindpost.site" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline" target="_blank" rel="noopener noreferrer">https://mindpost.site</a></p>
+
+    <hr class="my-8 border-gray-200">
+    <p class="text-sm text-gray-500 italic">By using Mind Post, you acknowledge that you have read and understood these Terms of Service and agree to be bound by them.</p>
+  </div>
+</div>
+{% endblock %}

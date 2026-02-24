@@ -1,0 +1,362 @@
+{% extends "base/home.html" %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Navigation bar with styled back link and buttons -->
+    <div class="mb-8 flex justify-between items-center"> {# Increased margin #}
+        {# Consistent link style - Increased size #}
+        <a href="{% url 'brain_dump_list' %}" class="inline-flex items-center gap-x-1.5 text-base font-semibold text-indigo-600 hover:text-indigo-500"> {# Increased text size #}
+            <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+            </svg>
+            Back to List
+        </a>
+
+       <div class="flex space-x-4"> {# Increased spacing #}
+            <!-- Create Post Dropdown -->
+            <form method="post" action="{% url 'create_post' %}" id="createPostForm">
+                {% csrf_token %}
+                <input type="hidden" name="selected_ids" value="{{ brain_dump.id }}">
+                <input type="hidden" name="min_chars" id="min_length_input">
+                <input type="hidden" name="max_chars" id="max_length_input">
+                <input type="hidden" name="length_option" id="length_option_input">
+
+                <div x-data="{ open: false }" @click.away="open = false" class="relative inline-block text-left">
+                    <div>
+                        {# Main dropdown button - Increased size #}
+                        <button type="button" @click="open = !open" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" id="menu-button" aria-expanded="true" aria-haspopup="true"> {# Increased padding, text size, gap #}
+                            <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                            </svg>
+                            Create Post
+                            <svg class="-mr-1 size-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Dropdown menu - Increased text size -->
+                    <div x-show="open"
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         class="absolute right-0 z-10 mt-2 w-64 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+                         role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1"
+                         style="display: none;"> {# Start hidden #}
+                        <div class="py-1" role="none">
+                            {# Use buttons for actions within the form - Increased text size #}
+                            <button type="button"
+                                    @click="document.getElementById('min_length_input').value = 25; document.getElementById('max_length_input').value = 280; document.getElementById('length_option_input').value = ''; document.getElementById('createPostForm').submit();"
+                                    class="block w-full px-4 py-2 text-left text-base text-gray-700 hover:bg-gray-100 hover:text-gray-900" {# Increased text size #}
+                                    role="menuitem" tabindex="-1">
+                                Default (25-280 chars)
+                            </button>
+                            <button type="button"
+                                    @click="document.getElementById('min_length_input').value = 25; document.getElementById('max_length_input').value = '{{ brain_dump.transcription|length }}'; document.getElementById('length_option_input').value = 'transcript'; document.getElementById('createPostForm').submit();"
+                                    class="block w-full px-4 py-2 text-left text-base text-gray-700 hover:bg-gray-100 hover:text-gray-900" {# Increased text size #}
+                                    role="menuitem" tabindex="-1">
+                                Transcript Length (25 - {{ brain_dump.transcription|length }} chars)
+                            </button>
+                            <button type="button"
+                                    @click="document.getElementById('min_length_input').value = 25; document.getElementById('max_length_input').value = '{{ brain_dump.transcription|length|mul:2 }}'; document.getElementById('length_option_input').value = 'double_transcript'; document.getElementById('createPostForm').submit();"
+                                    class="block w-full px-4 py-2 text-left text-base text-gray-700 hover:bg-gray-100 hover:text-gray-900" {# Increased text size #}
+                                    role="menuitem" tabindex="-1">
+                                2X Transcript (25 - {{ brain_dump.transcription|length|mul:2 }} chars)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- New Record Button - Primary Style - Increased size -->
+            {# Consistent primary button style #}
+            <a href="{% url 'brain_dump' %}" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"> {# Increased padding, text size, gap #}
+                <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                     <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z" clip-rule="evenodd" />
+                </svg>
+                Record New
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden"> {# Changed rounded-xl to rounded-lg #}
+        <!-- Header with metadata - Increased padding and text size -->
+        {# Kept gradient header, but ensure text color is white #}
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-8"> {# Increased padding #}
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-white">Brain Dump</h1> {# Increased text size #}
+                <div class="text-base text-white opacity-90"> {# Increased text size #}
+                    {{ brain_dump.created_at|date:"M d, Y • g:i A" }}
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 space-y-8"> {# Increased padding and spacing #}
+            <!-- Audio Player -->
+            <div> {# Wrapped in div for spacing #}
+                {# Consistent heading style - Increased size #}
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center"> {# Increased text size and margin #}
+                    <svg class="h-5 w-5 mr-2 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                    </svg>
+                    Audio Recording
+                </h2>
+                <audio controls class="w-full rounded-lg shadow-sm">
+                    {# Ensure the type matches the actual server-side format (MP3) #}
+                    <source src="{{ brain_dump.recording.url }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
+            <!-- Transcript Section -->
+            <div> {# Wrapped in div for spacing #}
+                <div class="flex justify-between items-center mb-4"> {# Increased margin #}
+                    {# Consistent heading style - Increased size #}
+                    <h2 class="text-lg font-semibold text-gray-900 flex items-center"> {# Increased text size #}
+                        <svg class="h-5 w-5 mr-2 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
+                        </svg>
+                        Transcript
+                    </h2>
+                    <div class="flex space-x-3"> {# Increased spacing #}
+                        {# Edit Button - Secondary Style - Increased size #}
+                        <button id="editBtn" class="inline-flex items-center gap-x-2 rounded-md bg-white px-3 py-2 text-base font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50"> {# Increased padding, text size, gap #}
+                            <svg class="-ml-0.5 size-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            Edit
+                        </button>
+                        {# Save Button - Primary Style - Increased size #}
+                        <button id="saveBtn" class="hidden inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-3 py-2 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"> {# Increased padding, text size, gap #}
+                            <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Save
+                        </button>
+                        {# Cancel Button - Secondary Style - Increased size #}
+                        <button id="cancelBtn" class="hidden inline-flex items-center gap-x-2 rounded-md bg-white px-3 py-2 text-base font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50"> {# Increased padding, text size, gap #}
+                            <svg class="-ml-0.5 size-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Transcript Display/Edit - Increased size -->
+                <div id="transcriptContainer" class="relative">
+                    {# Apply prose for typography, adjust padding/border - Increased base size #}
+                    <div id="transcriptDisplay" class="prose prose-base max-w-none rounded-md border border-gray-200 p-5"> {# Increased prose size and padding #}
+                        {{ brain_dump.transcription|linebreaks }}
+                    </div>
+                    {# Consistent textarea style - Increased size #}
+                    <textarea id="transcriptEdit" class="hidden block w-full rounded-md bg-white px-4 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-base/6 h-80">{{ brain_dump.transcription }}</textarea> {# Increased padding, text size, height #}
+                    <div id="saveStatus" class="hidden absolute top-0 right-0 mt-2 mr-2 px-3 py-1.5 rounded-md text-base font-medium"></div> {# Increased padding and text size #}
+                </div>
+            </div>
+
+            <!-- Tags Section -->
+            {% if brain_dump.tags.all %}
+            <div> {# Wrapped in div for spacing #}
+                {# Consistent heading style - Increased size #}
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center"> {# Increased text size and margin #}
+                    <svg class="h-5 w-5 mr-2 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                    </svg>
+                    Tags
+                </h2>
+                <div class="flex flex-wrap gap-2.5"> {# Increased gap #}
+                    {% for tag in brain_dump.tags.all %}
+                    {# Consistent tag style using indigo - Increased size #}
+                    <span class="inline-flex items-center rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 ring-1 ring-inset ring-indigo-600/20"> {# Increased padding and text size #}
+                        #{{ tag }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Metadata - Increased size -->
+            <div class="text-base text-gray-500 border-t border-gray-200 pt-5 mt-8"> {# Increased text size, padding, margin #}
+                {% if brain_dump.edited %}
+                <div class="flex items-center mb-1.5"> {# Increased margin #}
+                    <svg class="h-4 w-4 mr-1.5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"> {# Increased margin #}
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    {# Use consistent indigo color #}
+                    <span class="text-indigo-600">Edited</span>
+                </div>
+                {% endif %}
+                {% if brain_dump.modified_at %}
+                    Last updated: {{ brain_dump.modified_at|date:"M d, Y • g:i A" }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const display = document.getElementById('transcriptDisplay');
+    const edit = document.getElementById('transcriptEdit');
+    const saveStatus = document.getElementById('saveStatus');
+    
+    let originalContent = edit.value;
+
+    // Toggle edit mode
+    editBtn.addEventListener('click', function() {
+        // Save original content for cancel functionality
+        originalContent = edit.value;
+        
+        // Switch to edit mode
+        display.classList.add('hidden');
+        edit.classList.remove('hidden');
+        editBtn.classList.add('hidden');
+        saveBtn.classList.remove('hidden');
+        cancelBtn.classList.remove('hidden');
+        
+        // Focus on the textarea
+        edit.focus();
+    });
+    
+    // Cancel editing
+    cancelBtn.addEventListener('click', function() {
+        // Restore original content
+        edit.value = originalContent;
+        
+        // Switch back to display mode
+        display.classList.remove('hidden');
+        edit.classList.add('hidden');
+        saveBtn.classList.add('hidden');
+        cancelBtn.classList.add('hidden');
+        editBtn.classList.remove('hidden');
+    });
+
+    // Save changes with improved feedback
+    saveBtn.addEventListener('click', async function() {
+        // Show saving indicator
+        saveStatus.textContent = "Saving...";
+        saveStatus.classList.remove('hidden');
+        saveStatus.classList.add('bg-yellow-100', 'text-yellow-800');
+        
+        try {
+            const response = await fetch(`/record/brain-dump/{{ brain_dump.id }}/update/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    transcription: edit.value,
+                    edited: true
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Update display with properly formatted content
+                display.innerHTML = '';
+                const paragraphs = edit.value.split('\n\n');
+                
+                paragraphs.forEach(p => {
+                    if (p.trim()) {
+                        const para = document.createElement('p');
+                        para.textContent = p;
+                        display.appendChild(para);
+                    }
+                });
+                
+                // Switch back to display mode
+                display.classList.remove('hidden');
+                edit.classList.add('hidden');
+                saveBtn.classList.add('hidden');
+                cancelBtn.classList.add('hidden');
+                editBtn.classList.remove('hidden');
+                
+                // Show success message
+                saveStatus.textContent = "Saved!";
+                saveStatus.classList.remove('bg-yellow-100', 'text-yellow-800');
+                saveStatus.classList.add('bg-green-100', 'text-green-800');
+                
+                // Update tags display if needed
+                if (data.tags) {
+                    // If we have tags section, we could update it here
+                }
+                
+                // Add edited indicator if not already present
+                if (data.edited && !document.querySelector('.text-indigo-600')) { // Check for indigo instead of blue
+                    const metadataDiv = document.querySelector('.text-sm.text-gray-500');
+                    const editedDiv = document.createElement('div');
+                    editedDiv.className = 'flex items-center mb-1';
+                    editedDiv.innerHTML = `
+                        <svg class="h-4 w-4 mr-1 text-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"> {# Use consistent indigo icon color #}
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                        <span class="text-indigo-600">Edited</span> {# Use consistent indigo text color #}
+                    `;
+                    metadataDiv.insertBefore(editedDiv, metadataDiv.firstChild);
+                }
+                
+                // Update last updated text
+                if (data.modified_at) {
+                    const lastUpdatedText = document.querySelector('.text-sm.text-gray-500');
+                    const dateText = lastUpdatedText.lastChild;
+                    if (dateText.nodeType === Node.TEXT_NODE) {
+                        dateText.textContent = `Last updated: ${data.modified_at}`;
+                    }
+                }
+                
+                // Hide success message after a delay
+                setTimeout(() => {
+                    saveStatus.classList.add('hidden');
+                }, 3000);
+            } else {
+                throw new Error('Failed to save');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            // Show error message
+            saveStatus.textContent = "Failed to save";
+            saveStatus.classList.remove('bg-yellow-100', 'text-yellow-800');
+            saveStatus.classList.add('bg-red-100', 'text-red-800');
+            
+            // Hide error message after a delay
+            setTimeout(() => {
+                saveStatus.classList.add('hidden');
+            }, 3000);
+        }
+    });
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+
+
+
+{% endblock %}

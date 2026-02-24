@@ -1,0 +1,192 @@
+{% extends 'base/home.html' %}
+{% load static %}
+
+{% block title %}Chat with Your Brain Dumps{% endblock %}
+
+{% block content %}
+{# Use consistent page padding and background #}
+<div class="bg-gray-50 min-h-[80vh] py-10 sm:py-12"> {# Increased padding #}
+    <div class="container mx-auto px-4 max-w-4xl"> {# Added max-w-4xl #}
+        {# Consistent header section - Increased size #}
+        <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 mb-8 sm:mb-10"> {# Increased gap and margin #}
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-3xl">Chat with Your Brain Dumps</h1> {# Increased base text size #}
+            {% if user_limits %}
+            <div class="text-base text-gray-500"> {# Increased text size #}
+                {% comment %} WE NEED TO FIX THE HTMX TO ALSO UPDATE THIS THEN WE CAN UNCOMMENT IT {% endcomment %}
+                {% comment %} Messages: {{ user.current_chat_messages }} / {{ user_limits.max_chat_messages }} {% endcomment %}
+            </div>
+            {% elif user.is_authenticated %}
+            <div class="text-base text-gray-500"> {# Increased text size #}
+                No active subscription. <a href="{% url 'subscriptions_app:upgrade_page' %}" class="font-semibold text-indigo-600 hover:text-indigo-500">Upgrade Plan</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {# Consistent card style for chat container - Increased padding #}
+        <div id="chat-container" class="bg-white shadow-sm ring-1 ring-black/5 rounded-lg p-5 sm:p-8 h-[75vh] flex flex-col"> {# Increased padding #}
+            {# Chat messages area with custom scrollbar (consider adding scrollbar styles if needed) - Increased spacing #}
+            <div id="chat-messages" class="flex-grow overflow-y-auto mb-6 space-y-5 pr-2"> {# Increased margin and spacing #}
+                {# Display chat history passed from the view #}
+                {% if not chat_history %}
+                    {# Initial bot message style - Increased size #}
+                    <div class="flex">
+                        <div class="p-4 rounded-lg bg-indigo-50 text-indigo-800 max-w-sm md:max-w-lg"> {# Increased padding and max-w #}
+                            <p class="text-base">Ask me anything about your past recordings!</p> {# Increased text size #}
+                        </div>
+                    </div>
+                {% else %}
+                    {% for message in chat_history %}
+                        <div class="flex {% if message.sender == 'user' %}justify-end{% endif %}">
+                            {# Standardized chat bubble styles - Increased size #}
+                            <div class="p-4 rounded-lg max-w-sm md:max-w-lg {% if message.sender == 'user' %}bg-gray-100 text-gray-800{% else %}bg-indigo-50 text-indigo-800{% endif %}"> {# Increased padding and max-w #}
+                                <p class="text-base">{{ message.text|linebreaksbr }}</p> {# Increased text size #}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            {# Form area with consistent styling - Increased padding #}
+            <div class="border-t border-gray-200 pt-6"> {# Increased padding #}
+                {% with chat_limit_reached=user_limits %}
+                {% if chat_limit_reached and user.current_chat_messages >= user_limits.max_chat_messages %}
+                    {% with chat_limit_reached_final=True %}
+                    <form id="chat-form"
+                          hx-post="{% url 'chat' %}"
+                          hx-target="#chat-messages"
+                          hx-swap="beforeend show:bottom" {# Scroll to bottom on swap #}
+                          hx-indicator="#loading-indicator"
+                          class="flex items-center gap-x-3"> {# Increased gap #}
+                        {% csrf_token %}
+                        {# Consistent input style - Increased size #}
+                        <input type="text" id="message-input" name="message"
+                               placeholder="Chat limit reached"
+                               class="block w-full rounded-md bg-white px-4 py-2.5 text-base text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 bg-gray-100 cursor-not-allowed" {# Increased padding and text size #}
+                               disabled required>
+                        {# Consistent button style (primary) - Increased size #}
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-md px-4 py-2.5 text-base font-semibold shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 bg-gray-300 text-gray-500 cursor-not-allowed" {# Increased padding and text size #}
+                                disabled title="Chat limit reached. Upgrade your plan for more messages.">
+                            Send
+                        </button>
+                        {# Loading Indicator #}
+                        <span id="loading-indicator" class="htmx-indicator">
+                            <svg class="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </span>
+                    </form>
+                    {# Consistent limit message style - Increased size #}
+                    <p class="text-center text-red-600 mt-4 text-base"> {# Increased margin and text size #}
+                        You've reached your chat message limit ({{ user.current_chat_messages }}/{{ user_limits.max_chat_messages }}).
+                        {# Consistent link style #}
+                        <a href="{% url 'subscriptions_app:upgrade_page' %}" class="font-semibold text-indigo-600 hover:text-indigo-500 underline">Upgrade your plan</a> for more messages.
+                    </p>
+                    {% endwith %}
+                {% elif user_limits %}
+                    <form id="chat-form"
+                          hx-post="{% url 'chat' %}"
+                          hx-target="#chat-messages"
+                          hx-swap="beforeend show:bottom" {# Scroll to bottom on swap #}
+                          hx-indicator="#loading-indicator"
+                          class="flex items-center gap-x-3"> {# Increased gap #}
+                        {% csrf_token %}
+                        {# Consistent input style - Increased size #}
+                        <input type="text" id="message-input" name="message"
+                               placeholder="Type your message..."
+                               class="block w-full rounded-md bg-white px-4 py-2.5 text-base text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600" {# Increased padding and text size #}
+                               required>
+                        {# Consistent button style (primary) - Increased size #}
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-md px-4 py-2.5 text-base font-semibold shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600"> {# Increased padding and text size #}
+                            Send
+                        </button>
+                        {# Loading Indicator #}
+                        <span id="loading-indicator" class="htmx-indicator">
+                            <svg class="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </span>
+                    </form>
+                {% else %}
+                    {# Disabled form for users without subscription - Increased size #}
+                    <form id="chat-form" class="flex items-center gap-x-3"> {# Increased gap #}
+                        {% csrf_token %}
+                        <input type="text" id="message-input" name="message"
+                               placeholder="No active subscription"
+                               class="block w-full rounded-md px-4 py-2.5 text-base text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 bg-gray-100 cursor-not-allowed" {# Increased padding and text size #}
+                               disabled>
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-md px-4 py-2.5 text-base font-semibold shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 bg-gray-300 text-gray-500 cursor-not-allowed" {# Increased padding and text size #}
+                                disabled title="Subscription required to chat">
+                            Send
+                        </button>
+                    </form>
+                    <p class="text-center text-orange-600 mt-4 text-base"> {# Increased margin and text size #}
+                        You need an active subscription to use the chat feature.
+                        {% comment %} <a href="{% url 'subscriptions_app:upgrade_page' %}" class="font-semibold text-indigo-600 hover:text-indigo-500 underline">Upgrade your plan</a> {% endcomment %}
+                    </p>
+                {% endif %}
+                {% endwith %}
+            </div>        </div>
+    </div>
+</div>
+
+{# HTMX integration script #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatMessages = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+
+    function scrollToBottom() {
+        if (chatMessages) {
+            // Use requestAnimationFrame for smoother scrolling after DOM updates
+            requestAnimationFrame(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }
+    }
+
+    // Initial scroll to bottom
+    scrollToBottom();
+
+    // Clear input after successful HTMX request from the form
+    if (chatForm) {
+        chatForm.addEventListener('htmx:afterRequest', function(event) {
+            if (event.detail.successful && event.detail.elt === chatForm) {
+                if (messageInput) {
+                    messageInput.value = ''; // Clear the input field
+                    messageInput.focus(); // Optionally refocus input
+                }
+            }
+            // Optional: Add error handling for failed requests
+            // if (event.detail.failed) {
+            //     console.error("HTMX request failed:", event.detail);
+            // }
+        });
+    }
+
+    // Scroll to bottom after new message is added via HTMX swap
+    // Using hx-swap="beforeend show:bottom" might make this listener redundant,
+    // but keeping it as a fallback or for fine-tuning.
+    if (chatMessages) {
+        chatMessages.addEventListener('htmx:afterSwap', function(event) {
+            // Check if the swap happened within the chatMessages container
+            if (event.detail.target === chatMessages) {
+                 scrollToBottom();
+            }
+        });
+
+        // Also scroll if content is loaded initially by HTMX into the container
+        chatMessages.addEventListener('htmx:load', function(event) {
+            if (event.detail.target === chatMessages) {
+                scrollToBottom();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

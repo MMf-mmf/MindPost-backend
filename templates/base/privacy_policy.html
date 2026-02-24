@@ -1,0 +1,154 @@
+{% extends "base/home.html" %}
+
+{% block content %}
+<div class="bg-white px-6 py-32 lg:px-8">
+  <div class="mx-auto max-w-3xl text-base/7 text-gray-700">
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl mb-6 text-pretty">Privacy Notice</h1>
+    <p class="mb-4">Last updated: {{ "now"|date:"F j, Y" }}</p> <p class="mb-4">This privacy notice for Mind Post (doing business as Mind Post) ("<strong>Mind Post</strong>," "<strong>we</strong>," "<strong>us</strong>," or "<strong>our</strong>"), describes how and why we might collect, store, use, and/or share ("<strong>process</strong>") your information when you use our services ("<strong>Services</strong>"), such as when you:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>Visit our website at https://mindpost.site, or any website of ours that links to this privacy notice</li>
+        <li>Download and use our application(s), if applicable.</li>
+        <li>Engage with us in other related ways, including any sales, marketing, or events</li>
+    </ul>
+
+    <p class="mb-4"><strong>Questions or concerns?</strong> Reading this privacy notice will help you understand your privacy rights and choices. If you do not agree with our policies and practices, please do not use our Services. If you still have any questions or concerns, please contact us at contact@mindpost.site.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">SUMMARY OF KEY POINTS</h2>
+    <p class="mb-4"><i>This summary provides key points from our privacy notice, but you can find out more details about any of these topics by clicking the link following each key point or by using our table of contents below to find the section you are looking for.</i></p>
+
+    <p class="mb-2"><strong>What personal information do we process and why?</strong> When you use our Services, you provide us with audio recordings of your thoughts. We process these recordings to provide the core function of our app:
+    <ul class="list-disc list-inside ml-4 mb-2">
+        <li>We send your audio files to third-party AI services (<strong>OpenAI</strong> and/or <strong>Google Cloud AI</strong>) to transcribe them into text.</li>
+        <li>We then use these AI services to help you generate social media posts from your transcribed thoughts.</li>
+    </ul>
+    This processing also involves handling the generated text, social media posts, and social media authentication tokens if you choose to connect your accounts.
+    </p>
+    <p class="mb-2"><strong>Do we process any sensitive personal information?</strong> We may process sensitive personal information when necessary with your consent or as otherwise permitted by applicable law. The content of your audio recordings and transcriptions could be considered sensitive.</p>
+    <p class="mb-2"><strong>Do we receive any information from third parties?</strong> We do not receive any information from public databases, marketing partners, social media platforms, or other outside sources, other than what is necessary for social media authentication if you choose to connect your accounts.</p>
+    <p class="mb-2"><strong>How do we process your information?</strong> We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We may also process your information for other purposes with your consent. We process your information only when we have a valid legal reason to do so.</p>
+    <p class="mb-2"><strong>How do we keep your information safe?</strong> We have organizational and technical processes and procedures in place to protect your personal information, including encryption of sensitive data. However, no electronic transmission over the internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information.</p>
+    <p class="mb-2"><strong>What are your rights?</strong> Depending on where you are located geographically, the applicable privacy law may mean you have certain rights regarding your personal information.</p>
+    <p class="mb-2"><strong>How do you exercise your rights?</strong> The easiest way to exercise your rights is by contacting us. We will consider and act upon any request in accordance with applicable data protection laws.</p>
+
+    <h2 class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">TABLE OF CONTENTS</h2>
+    <ol class="list-decimal list-inside mb-4">
+        <li><a href="#info-collect" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">WHAT INFORMATION DO WE COLLECT?</a></li>
+        <li><a href="#info-process" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">HOW DO WE PROCESS YOUR INFORMATION?</a></li>
+        <li><a href="#business-model" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">OUR BUSINESS MODEL AND SERVICES</a></li>
+        <li><a href="#info-share" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?</a></li>
+        <li><a href="#third-party-services" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">WHAT IS OUR STANCE ON THIRD-PARTY SERVICES?</a></li>
+        <li><a href="#info-safe" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">HOW DO WE KEEP YOUR INFORMATION SAFE?</a></li>
+        <li><a href="#info-retain" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">HOW LONG DO WE KEEP YOUR INFORMATION?</a></li>
+        <li><a href="#minors" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">DO WE COLLECT INFORMATION FROM MINORS?</a></li>
+        <li><a href="#privacy-rights" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">WHAT ARE YOUR PRIVACY RIGHTS?</a></li>
+        <li><a href="#dnt" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">CONTROLS FOR DO-NOT-TRACK FEATURES</a></li>
+        <li><a href="#california-rights" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">DO CALIFORNIA RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?</a></li>
+        <li><a href="#updates" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">DO WE MAKE UPDATES TO THIS NOTICE?</a></li>
+        <li><a href="#contact" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</a></li>
+        <li><a href="#review-update-delete" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</a></li>
+    </ol>
+
+    <h2 id="info-collect" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">1. WHAT INFORMATION DO WE COLLECT?</h2>
+    <p class="mb-3 font-semibold">Personal information you disclose to us</p>
+    <p class="mb-4"><i><strong>In Short:</strong> We collect personal information that you provide to us.</i></p>
+    <p class="mb-4">We collect personal information that you voluntarily provide to us when you register on the Services, express an interest in obtaining information about us or our products and Services, when you participate in activities on the Services, or otherwise when you contact us.</p>
+    <p class="mb-4">The personal information that we collect depends on the context of your interactions with us and the Services, the choices you make, and the products and features you use. The personal information we collect may include the following:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>Names</li>
+        <li>Email addresses</li>
+        <li>Usernames</li>
+        <li>Passwords</li>
+        <li>Contact preferences</li>
+        <li>Audio recordings (which you provide for transcription and post generation)</li>
+        <li>Transcriptions of audio recordings (generated via third-party services)</li>
+        <li>Social media posts (generated via third-party services based on your audio/transcriptions)</li>
+        <li>Social media authentication tokens (if you connect your social media accounts for posting)</li>
+    </ul>
+    <p class="mb-3 font-semibold">Sensitive Information.</p>
+    <p class="mb-4">When necessary, with your consent or as otherwise permitted by applicable law, we process the following categories of sensitive information:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li>The content of your audio recordings and the resulting transcriptions and social media posts may be considered sensitive depending on the subject matter you discuss.</li>
+    </ul>
+    <p class="mb-4"><strong>Social Media Login Data.</strong> We may provide you with the option to register with us using your existing social media account details, like Facebook, Twitter, or other social media account. If you choose to do this, we will collect the information described in the section called "HOW DO WE HANDLE YOUR SOCIAL LOGINS?" below.</p>
+    <p class="mb-4">All personal information that you provide to us must be true, complete, and accurate, and you must notify us of any changes to such personal information.</p>
+    <p class="mb-3 font-semibold">Information automatically collected</p>
+    <p class="mb-4"><i><strong>In Short:</strong> Some information — such as your Internet Protocol (IP) address and/or browser and device characteristics — is collected automatically when you visit our Services.</i></p>
+    <p class="mb-4">We automatically collect certain information when you visit, use, or navigate the Services. This information does not reveal your specific identity (like your name or contact information) but may include device and usage information, such as your IP address, browser and device characteristics, operating system, language preferences, referring URLs, device name, country, location, information about how and when you use our Services, and other technical information. This information is primarily needed to maintain the security and operation of our Services, and for our internal analytics and reporting purposes.</p>
+    <p class="mb-4">The information we collect includes:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li><i>Log and Usage Data.</i> Log and usage data is service-related, diagnostic, usage, and performance information our servers automatically collect when you access or use our Services and which we record in log files...</li>
+        <li><i>Device Data.</i> We collect device data such as information about your computer, phone, tablet, or other device you use to access the Services...</li>
+        <li><i>Location Data.</i> We collect location data such as information about your device's location...</li>
+    </ul>
+
+    <h2 id="info-process" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">2. HOW DO WE PROCESS YOUR INFORMATION?</h2>
+    <p class="mb-4"><i><strong>In Short:</strong> We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We may also process your information for other purposes with your consent.</i></p>
+    <p class="mb-4"><strong>We process your personal information for a variety of reasons, depending on how you interact with our Services, including:</strong></p>
+    <ul class="list-disc list-inside mb-4">
+        <li><strong>To facilitate account creation and authentication and otherwise manage user accounts.</strong></li>
+        <li><strong>To deliver and facilitate delivery of services to the user.</strong> We may process your information to provide you with the requested service, specifically, to record audio, transcribe audio using third-party providers (like OpenAI and Google), and help generate social media posts from it.</li>
+        <li><strong>To respond to user inquiries/offer support to users.</strong></li>
+        <li><strong>To send administrative information to you.</strong></li>
+        <li><strong>To protect our Services.</strong></li>
+        <li><strong>To identify usage trends.</strong></li>
+        <li><strong>To comply with our legal obligations.</strong></li>
+    </ul>
+
+    <h2 id="business-model" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">3. OUR BUSINESS MODEL AND SERVICES</h2>
+    <p class="mb-4">Our Services are offered on a subscription basis. Users must sign up and purchase a subscription plan through our official website (mindpost.site) to access the app's features, including cloud storage and AI processing. The Mind Post mobile application does not use Apple's In-App Purchase system. Your subscription ensures the continued operation, security, and improvement of the Services we provide.</p>
+
+    <h2 id="info-share" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">4. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?</h2>
+    <p class="mb-4"><i><strong>In Short:</strong> We share information in specific situations described in this section and/or with the following third parties to make our app function.</i></p>
+    <p class="mb-4">To provide our core Services, we <strong>do share</strong> your personal information in the following essential situations:</p>
+    <ul class="list-disc list-inside mb-4">
+        <li><strong>With AI Service Providers for Core Functionality.</strong> Our app's primary feature is transcribing your audio recordings and generating social media posts. To make this possible, <strong>we send your audio data to our third-party AI service providers, specifically OpenAI (for Whisper and GPT models) and Google (for Google Cloud Speech-to-Text API).</strong> These providers process your data to perform the transcription and content generation tasks you request. Their use of your data is governed by their respective privacy policies, which we encourage you to review. We have implemented encryption for data in transit to these services.</li>
+        <li><strong>Business Transfers.</strong> We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.</li>
+        <li><strong>When we use Google APIs.</strong> To be specific about our use of Google, we share your information with Google APIs (e.g., Google Cloud Speech-to-Text API) by using the Google API Client to access Google services. To learn more about Google's data practices, please review their Privacy Policy at <a href="https://policies.google.com/privacy" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline" target="_blank" rel="noopener noreferrer">https://policies.google.com/privacy</a>. We take measures to protect your information by encrypting data shared with Google.</li>
+        <li><strong>When we use OpenAI APIs.</strong> To be specific about our use of OpenAI, we share your information with OpenAI APIs (e.g., Whisper API for transcription, GPT models for post generation). To learn more about OpenAI's data practices, please review their Privacy Policy at <a href="https://openai.com/policies/privacy-policy" class="font-medium text-indigo-600 hover:text-indigo-500 hover:underline" target="_blank" rel="noopener noreferrer">https://openai.com/policies/privacy-policy</a>. We take measures to protect your information by encrypting data shared with OpenAI.</li>
+    </ul>
+
+    <h2 id="third-party-services" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">5. WHAT IS OUR STANCE ON THIRD-PARTY SERVICES?</h2>
+    <p class="mb-4"><i><strong>In Short:</strong> We are not responsible for the safety of any information that you share with third-party service providers that are essential to our service.</i></p>
+    <p class="mb-4">The Services rely on third-party services, such as our AI providers OpenAI and Google. Accordingly, we do not make any guarantee regarding any such third parties, and we will not be liable for any loss or damage caused by the use of such third-party websites, services, or applications. The inclusion of a link towards a third-party website, service, or application does not imply an endorsement by us beyond the specific services they provide to us as outlined in this policy. We cannot guarantee the safety and privacy of data you provide to any third parties. Any data collected by third parties is not covered by this privacy notice. We are not responsible for the content or privacy and security practices and policies of any third parties. You should review the policies of such third parties and contact them directly to respond to your questions.</p>
+    <p class="mb-4">Specifically, our use of third-party AI services like OpenAI and Google for transcription and content generation is integral to our Services. While we select trusted providers and implement security measures like encryption, the processing by these third parties is governed by their respective privacy policies and terms of service. We encourage you to review their policies.</p>
+
+    <h2 id="info-safe" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">6. HOW DO WE KEEP YOUR INFORMATION SAFE?</h2>
+    <p class="mb-4"><i><strong>In Short:</strong> We aim to protect your personal information through a system of organizational and technical security measures.</i></p>
+    <p class="mb-4">We have implemented appropriate and reasonable technical and organizational security measures designed to protect the security of any personal information we process. This includes encryption for your transcriptions and social media authentication tokens. However, despite our safeguards and efforts to secure your information, no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. Although we will do our best to protect your personal information, transmission of personal information to and from our Services is at your own risk. You should only access the Services within a secure environment.</p>
+
+    <h2 id="info-retain" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">7. HOW LONG DO WE KEEP YOUR INFORMATION?</h2>
+    <p class="mb-4"><i><strong>In Short:</strong> We keep your information for as long as you have an account with us, and you are in control of your data.</i></p>
+    <p class="mb-4">We will only keep your personal information for as long as it is necessary for the purposes set out in this privacy notice, unless a longer retention period is required or permitted by law (such as tax, accounting, or other legal requirements). No purpose in this notice will require us keeping your personal information for longer than the period of time in which users have an account with us.</p>
+    <p class="mb-4"><strong>Specifically, your audio recordings, transcriptions, and generated posts are retained in your account for you to access. You can delete this data at any time through the app or by contacting us. Upon your request to terminate your account, we will deactivate or delete your account and information, including all your recordings and transcriptions, from our active databases in accordance with our data deletion timeline.</strong></p>
+    <p class="mb-4">When we have no ongoing legitimate business need to process your personal information, we will either delete or anonymize such information, or, if this is not possible (for example, because your personal information has been stored in backup archives), then we will securely store your personal information and isolate it from any further processing until deletion is possible.</p>
+
+    <h2 id="minors" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">8. DO WE COLLECT INFORMATION FROM MINORS?</h2>
+    <p class="mb-4"><i><strong>In Short:</strong> We do not knowingly collect data from or market to children under 18 years of age.</i></p>
+    <p class="mb-4">We do not knowingly solicit data from or market to children under 18 years of age. By using the Services, you represent that you are at least 18 or that you are the parent or guardian of such a minor and consent to such minor dependent’s use of the Services...</p>
+
+    <h2 id="privacy-rights" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">9. WHAT ARE YOUR PRIVACY RIGHTS?</h2>
+    <p class="mb-4"><i><strong>In Short:</strong> In some regions, such as the European Economic Area (EEA), United Kingdom (UK), and Canada, you have rights that allow you greater access to and control over your personal information. You may review, change, or terminate your account at any time.</i></p>
+    <p class="mb-4">In some regions (like the EEA, UK, and Canada), you have certain rights under applicable data protection laws...</p>
+    <p class="mb-3 font-semibold">Account Information</p>
+    <p class="mb-4">If you would at any time like to review or change the information in your account or terminate your account, you can log in to your account settings and update your user account or contact us using the contact information provided.</p>
+    <p class="mb-4">Upon your request to terminate your account, we will deactivate or delete your account and information from our active databases. However, we may retain some information in our files to prevent fraud, troubleshoot problems, assist with any investigations, enforce our legal terms and/or comply with applicable legal requirements.</p>
+
+    <h2 id="dnt" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">10. CONTROLS FOR DO-NOT-TRACK FEATURES</h2>
+    <p class="mb-4">Most web browsers and some mobile operating systems and mobile applications include a Do-Not-Track ("DNT") feature... As such, we do not currently respond to DNT browser signals...</p>
+
+    <h2 id="california-rights" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">11. DO CALIFORNIA RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?</h2>
+    <p class="mb-4"><i><strong>In Short:</strong> Yes, if you are a resident of California, you are granted specific rights regarding access to your personal information.</i></p>
+    <p class="mb-4">California Civil Code Section 1798.83... We do not share your personal information with third parties for their direct marketing purposes...</p>
+
+    <h2 id="updates" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">12. DO WE MAKE UPDATES TO THIS NOTICE?</h2>
+    <p class="mb-4"><i><strong>In Short:</strong> Yes, we will update this notice as necessary to stay compliant with relevant laws.</i></p>
+    <p class="mb-4">We may update this privacy notice from time to time... We encourage you to review this privacy notice frequently to be informed of how we are protecting your information.</p>
+
+    <h2 id="contact" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">13. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</h2>
+    <p class="mb-4">If you have questions or comments about this notice, you may email us at contact@mindpost.site.</p>
+
+    <h2 id="review-update-delete" class="mt-10 text-3xl font-semibold tracking-tight text-gray-900 mb-3 text-pretty">14. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</h2>
+    <p class="mb-4">Based on the applicable laws of your country, you may have the right to request access to the personal information we collect from you, change that information, or delete it. To request to review, update, or delete your personal information, please contact us at contact@mindpost.site.</p>
+  </div>
+</div>
+{% endblock %}

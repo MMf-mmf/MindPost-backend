@@ -1,0 +1,72 @@
+{% load static %}
+
+
+<html class="h-full bg-white">
+	<head>
+		<meta charset="utf-8" />
+		<title>{% block title %}Mind Post{% endblock %}</title>
+         <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+        <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+		<link rel="stylesheet" href="{% static 'css/tailwind_output.css' %}" />
+         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+          <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        {% comment %} <link rel="stylesheet" href="{% static 'css/multiSelect.css' %}" /> {% endcomment %}
+        {% comment %} <link rel="stylesheet" href="{% static 'css/select2.css' %}" /> {% endcomment %}
+        {% comment %} <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" /> {% endcomment %}
+		{% comment %} <link rel="stylesheet" href="{% static 'sweetalert2/dist/sweetalert2.min.css' %}"> {% endcomment %}
+	</head>
+
+
+    <!-- Google tag (gtag.js) -->
+    {% comment %} <script async src="https://www.googletagmanager.com/gtag/js?id=G-XE6QE322GT"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-XE6QE322GT');
+    </script> {% endcomment %}
+
+    
+	<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' class="min-h-screen flex flex-col"> {# Changed h-full to min-h-screen and added flex flex-col #}
+
+	{% comment %} <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-target="this" hx-ext="alpine-morph" hx-swap="morph"> {% endcomment %}
+
+	{% include 'base/menu.html'%} 
+		
+		
+		
+		<main 
+        class="flex-grow" {# Removed flex flex-col h-full, added flex-grow #}
+        hx-target="this" hx-ext="alpine-morph" hx-swap="morph"
+		>
+            {% comment %} this outer div is so we can target the messages on htmx responses {% endcomment %}
+            <div id="site_alerts">
+                {% if messages %}
+                    {% include 'base/includes/general_notifications.html' with messages=messages %}
+                {% endif %}
+            </div>
+            {% comment %} {% include 'includes/benner.html'%}  {% endcomment %}
+            
+            {% block content %} 
+            
+            {% endblock %}
+	  
+        </main> {# Close main tag here #}
+
+        <footer class="bg-gray-50 border-t border-gray-200 mt-auto"> {# Added mt-auto to push footer down #}
+            <div class="container mx-auto px-4 py-6 max-w-7xl text-center">
+                <p class="text-sm text-gray-500">
+                    &copy; {% now "Y" %} Mind Post. All rights reserved.
+                </p>
+                <div class="mt-4 flex justify-center space-x-6">
+                    <a href="{% url 'privacy_policy' %}" class="text-sm text-gray-500 hover:text-gray-600 transition-colors duration-150">Privacy Policy</a>
+                    <a href="{% url 'terms_of_service' %}" class="text-sm text-gray-500 hover:text-gray-600 transition-colors duration-150">Terms of Service</a>
+                </div>
+            </div>
+        </footer>
+
+	</body>
+</html>

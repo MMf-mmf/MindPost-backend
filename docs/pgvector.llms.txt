@@ -1,0 +1,88 @@
+Django
+Create a migration to enable the extension
+
+from pgvector.django import VectorExtension
+
+class Migration(migrations.Migration):
+    operations = [
+        VectorExtension()
+    ]
+Add a vector field to your model
+
+from pgvector.django import VectorField
+
+class Item(models.Model):
+    embedding = VectorField(dimensions=3)
+Also supports HalfVectorField, BitField, and SparseVectorField
+
+Insert a vector
+
+item = Item(embedding=[1, 2, 3])
+item.save()
+Get the nearest neighbors to a vector
+
+from pgvector.django import L2Distance
+
+Item.objects.order_by(L2Distance('embedding', [3, 1, 2]))[:5]
+Also supports MaxInnerProduct, CosineDistance, L1Distance, HammingDistance, and JaccardDistance
+
+Get the distance
+
+Item.objects.annotate(distance=L2Distance('embedding', [3, 1, 2]))
+Get items within a certain distance
+
+Item.objects.alias(distance=L2Distance('embedding', [3, 1, 2])).filter(distance__lt=5)
+Average vectors
+
+from django.db.models import Avg
+
+Item.objects.aggregate(Avg('embedding'))
+Also supports Sum
+
+Add an approximate index
+
+from pgvector.django import HnswIndex, IvfflatIndex
+
+class Item(models.Model):
+    class Meta:
+        indexes = [
+            HnswIndex(
+                name='my_index',
+                fields=['embedding'],
+                m=16,
+                ef_construction=64,
+                opclasses=['vector_l2_ops']
+            ),
+            # or
+            IvfflatIndex(
+                name='my_index',
+                fields=['embedding'],
+                lists=100,
+                opclasses=['vector_l2_ops']
+            )
+        ]
+Use vector_ip_ops for inner product and vector_cosine_ops for cosine distance
+
+Half-Precision Indexing
+Index vectors at half-precision
+
+from django.contrib.postgres.indexes import OpClass
+from django.db.models.functions import Cast
+from pgvector.django import HnswIndex, HalfVectorField
+
+class Item(models.Model):
+    class Meta:
+        indexes = [
+            HnswIndex(
+                OpClass(Cast('embedding', HalfVectorField(dimensions=3)), name='halfvec_l2_ops'),
+                name='my_index',
+                m=16,
+                ef_construction=64
+            )
+        ]
+Note: Add 'django.contrib.postgres' to INSTALLED_APPS to use OpClass
+
+Get the nearest neighbors
+
+distance = L2Distance(Cast('embedding', HalfVectorField(dimensions=3)), [3, 1, 2])
+Item.objects.order_by(distance)[:5]

@@ -1,0 +1,268 @@
+{% extends "base/home.html" %}
+{% load static %}
+
+{% block title %}Upgrade Plan{% endblock %}
+
+{% block content %}
+<div class="relative isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
+    {# Background gradient element from the template #}
+    <div class="absolute inset-x-0 -top-3 -z-10 transform-gpu overflow-hidden px-36 blur-3xl" aria-hidden="true">
+        <div class="mx-auto aspect-1155/678 w-[72.1875rem] bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+    </div>
+
+    {# Header section - using original text - Increased size #}
+    <div class="mx-auto max-w-4xl text-center">
+        <h2 class="text-lg font-semibold text-indigo-600">Pricing</h2> {# Increased text size #}
+        <p class="mt-2 text-6xl font-semibold tracking-tight text-balance text-gray-900 sm:text-6xl">Choose Your Plan</p> {# Increased base text size #}
+    </div>
+    <p class="mx-auto mt-8 max-w-2xl text-center text-xl font-medium text-pretty text-gray-600 sm:text-xl/8">Select the plan that best fits your needs.</p> {# Increased margin and text size #}
+
+    {# Pricing Grid #}
+    <div class="mx-auto mt-20 grid max-w-lg grid-cols-1 items-center gap-y-8 sm:mt-24 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2"> {# Increased margin and gap #}
+
+        {# Basic Plan Card #}
+        <div class="rounded-3xl bg-white p-10 shadow-2xl ring-1 ring-gray-900/10 sm:p-12"> {# Increased padding #}
+            <h3 id="tier-basic" class="text-lg font-semibold text-indigo-600">Basic Plan</h3> {# Increased text size #}
+            <p class="mt-5 flex items-baseline gap-x-2"> {# Increased margin #}
+                <span class="text-6xl font-semibold tracking-tight text-gray-900">$15</span> {# Increased text size #}
+                <span class="text-lg text-gray-500">/month</span> {# Increased text size #}
+            </p>
+            <p class="mt-7 text-lg text-gray-600">The essential features to get you started.</p> {# Increased margin and text size #}
+            <ul role="list" class="mt-10 space-y-4 text-base text-gray-600 sm:mt-12"> {# Increased margin, spacing, text size #}
+                {# Original Features with styled icons #}
+                <li class="flex gap-x-3.5"> {# Increased gap #}
+                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                    </svg>
+                    20 recordings per day
+                </li>
+                <li class="flex gap-x-3.5"> {# Increased gap #}
+                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                         <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                    </svg>
+                    50 chat messages per day
+                </li>
+                <li class="flex gap-x-3.5"> {# Increased gap #}
+                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                         <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                    </svg>
+                    10 posts per day
+                </li>
+                <li class="flex gap-x-3.5"> {# Increased gap #}
+                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                         <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                    </svg>
+                    Up to 5 min long recordings
+                </li>
+            </ul>
+            {# Conditional Button Logic for Basic Plan #}
+            {% if request.user.subscription_tier == 'basic' and request.user.subscription_status in 'active,trialing' and subscription_canceling %}
+                {# Reactivate Button Form - Increased size #}
+                <form action="{% url 'subscriptions_app:reactivate_subscription' %}" method="POST" class="mt-10 sm:mt-12"> {# Increased margin #}
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="block w-full rounded-md bg-green-600 px-4 py-3 text-center text-base font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"> {# Increased padding and text size #}
+                        Reactivate Plan
+                    </button>
+                </form>
+            {% elif request.user.subscription_tier == 'basic' and request.user.subscription_status in 'active,trialing' %}
+                {# Current Plan (Disabled) Button - Increased size #}
+                <button disabled title="You are currently on this plan"
+                        class="mt-10 block w-full rounded-md bg-gray-400 px-4 py-3 text-center text-base font-semibold text-white shadow-sm cursor-not-allowed sm:mt-12"> {# Increased margin, padding, text size #}
+                    Current Plan
+                </button>
+            {% else %}
+                {# Choose Basic Plan Button - Increased size #}
+                <button data-price-id="{{ basic_price_id }}"
+                        aria-describedby="tier-basic"
+                        class="plan-button mt-10 block w-full rounded-md bg-indigo-600 px-4 py-3 text-center text-base font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:mt-12"> {# Increased margin, padding, text size #}
+                    Choose Basic
+                </button>
+            {% endif %}
+        </div>
+
+        {# Pro Plan Card #}
+        <div class="rounded-3xl bg-white/60 p-10 ring-1 ring-gray-900/10 sm:p-12 
+                lg:ml-4 shadow-md hover:shadow-xl transition-shadow duration-300"> {# Increased padding #}
+         <h3 id="tier-pro" class="text-lg font-semibold text-indigo-600">Pro Plan</h3> {# Increased text size #}
+         <p class="mt-5 flex items-baseline gap-x-2"> {# Increased margin #}
+             <span class="text-6xl font-semibold tracking-tight text-gray-900">$30</span> {# Increased text size #}
+             <span class="text-lg text-gray-500">/month</span> {# Increased text size #}
+         </p>
+         <p class="mt-7 text-lg text-gray-600">Unlock powerful features for advanced users.</p> {# Increased margin and text size #}
+         <ul role="list" class="mt-10 space-y-4 text-base text-gray-600 sm:mt-12"> {# Increased margin, spacing, text size #}
+             {# Original Features with styled icons #}
+             <li class="flex gap-x-3.5"> {# Increased gap #}
+                 <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                     <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                 </svg>
+                 50 recordings per day
+             </li>
+             <li class="flex gap-x-3.5"> {# Increased gap #}
+                 <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                     <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                 </svg>
+                 100 chat messages per day
+             </li>
+             <li class="flex gap-x-3.5"> {# Increased gap #}
+                 <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                     <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                 </svg>
+                 20 posts per day
+             </li>
+             <li class="flex gap-x-3.5"> {# Increased gap #}
+                 <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                     <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                 </svg>
+                 Priority feature request
+             </li>
+             <li class="flex gap-x-3.5"> {# Increased gap #}
+                 <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                     <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                 </svg>
+                 Up to 10 min long recordings
+             </li>
+         </ul>
+         {# Conditional Button Logic for Pro Plan #}
+         {% if request.user.subscription_tier == 'pro' and request.user.subscription_status in 'active,trialing' and subscription_canceling %}
+             {# Reactivate Button Form - Increased size #}
+             <form action="{% url 'subscriptions_app:reactivate_subscription' %}" method="POST" class="mt-10 sm:mt-12"> {# Increased margin #}
+                 {% csrf_token %}
+                 <button type="submit"
+                         class="block w-full rounded-md bg-green-600 px-4 py-3 text-center text-base font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"> {# Increased padding and text size #}
+                     Reactivate Plan
+                 </button>
+             </form>
+         {% elif request.user.subscription_tier == 'pro' and request.user.subscription_status in 'active,trialing' %}
+             {# Current Plan (Disabled) Button - Increased size #}
+             <button disabled title="You are currently on this plan"
+                     class="mt-10 block w-full rounded-md bg-gray-400 px-4 py-3 text-center text-base font-semibold text-white shadow-sm cursor-not-allowed ring-1 ring-inset ring-gray-400 sm:mt-12"> {# Increased margin, padding, text size #}
+                 Current Plan
+             </button>
+         {% else %}
+             {# Choose Pro Plan Button - Increased size #}
+             <button data-price-id="{{ pro_price_id }}"
+                     aria-describedby="tier-pro"
+                     class="plan-button mt-10 block w-full rounded-md px-4 py-3 text-center text-base font-semibold text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:mt-12"> {# Increased margin, padding, text size #}
+                 Choose Pro
+             </button>
+         {% endif %}
+    </div>
+</div>
+
+{# Checkout Area - Kept from original - Increased size #}
+<div id="checkout-area" class="mt-16 bg-white shadow-lg rounded-lg p-10 border border-gray-200" style="display: none;"> {# Increased margin and padding #}
+     <h2 class="text-2xl font-semibold mb-8 text-center text-gray-800">Complete Payment</h2> {# Increased text size and margin #}
+     {# Loading indicator #}
+     <div id="loading-indicator" class="flex justify-center items-center py-5 text-lg text-gray-600" style="display: none;"> {# Increased padding and text size #}
+         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+         </svg>
+         <span>Loading payment form...</span>
+     </div>
+     {# Empty container for the embedded Stripe Checkout form #}
+     <div id="checkout" class="min-h-[250px]"></div> {# Increased min-height #}
+     <div id="error-message" class="text-red-600 mt-5 text-center text-base"></div> {# Increased margin and text size #}
+</div>
+
+
+</div>
+
+{# Load Stripe.js - Kept from original #}
+<script src="https://js.stripe.com/v3/"></script>
+
+{# Original JavaScript for Stripe Checkout - Kept from original #}
+<script type="text/javascript">
+    const stripePublicKey = "{{ stripe_public_key }}";
+    const csrfToken = "{{ csrf_token }}";
+    const createCheckoutSessionUrl = "{% url 'subscriptions_app:create_checkout_session' %}";
+    const stripe = Stripe(stripePublicKey);
+
+    const checkoutArea = document.getElementById('checkout-area');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const checkoutContainer = document.getElementById('checkout');
+    const errorMessageDiv = document.getElementById('error-message');
+    const planButtons = document.querySelectorAll('.plan-button');
+
+    let checkout = null; // To hold the Stripe checkout instance
+
+    // Function to fetch the client secret and initialize/mount checkout
+    async function initializeCheckout(priceId) {
+        // Clear previous errors and checkout form
+        errorMessageDiv.textContent = '';
+        if (checkout) {
+            checkout.destroy(); // Destroy previous instance if exists
+        }
+        checkoutContainer.innerHTML = ''; // Clear the container
+
+        // Show checkout area and loading indicator
+        checkoutArea.style.display = 'block';
+        loadingIndicator.style.display = 'flex';
+
+        try {
+            const response = await fetch(createCheckoutSessionUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({ priceId: priceId }) // Send selected price ID
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+
+            const { clientSecret } = await response.json();
+
+            if (!clientSecret) {
+                throw new Error("Client secret not received from server.");
+            }
+
+            loadingIndicator.style.display = 'none'; // Hide loading indicator
+
+            // Initialize and mount the embedded checkout form
+            checkout = await stripe.initEmbeddedCheckout({
+                clientSecret,
+            });
+            checkout.mount('#checkout');
+
+        } catch (error) {
+            console.error("Error initializing checkout:", error);
+            loadingIndicator.style.display = 'none'; // Hide loading indicator on error
+            errorMessageDiv.textContent = `Failed to load payment form: ${error.message}. Please try again or contact support.`;
+            checkoutArea.style.display = 'none'; // Optionally hide area on error
+        }
+    }
+
+    // Add event listeners to plan buttons
+    planButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (this.disabled) return; // Do nothing if button is disabled (current plan)
+
+            const priceId = this.getAttribute('data-price-id');
+            if (priceId) {
+                // Disable all buttons temporarily to prevent double clicks
+                planButtons.forEach(btn => btn.disabled = true);
+                initializeCheckout(priceId).finally(() => {
+                    // Re-enable buttons *except* the one for the current plan after attempt
+                    planButtons.forEach(btn => {
+                        // Check if the button corresponds to the user's current plan before re-enabling
+                        const isCurrentPlanButton = btn.hasAttribute('disabled') && btn.title === "You are currently on this plan";
+                        if (!isCurrentPlanButton) {
+                             btn.disabled = false;
+                         }
+                    });
+                });
+            } else {
+                console.error("Price ID not found on button.");
+                errorMessageDiv.textContent = "Could not determine the selected plan. Please try again.";
+            }
+        });
+    });
+
+</script>
+
+{% endblock %}

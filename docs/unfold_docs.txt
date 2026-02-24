@@ -1,0 +1,1966 @@
+Settings options
+The UNFOLD dictionary contains all available options to configure the admin interface. By default, there is not need to set any options. The admin interface will work as expected. Below you can find full list of available options.
+
+# settings.py
+
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+UNFOLD = {
+    "SITE_TITLE": "Custom suffix in <title> tag",
+    "SITE_HEADER": "Appears in sidebar at the top",
+    "SITE_SUBHEADER": "Appears under SITE_HEADER",
+    "SITE_DROPDOWN": [
+        {
+            "icon": "diamond",
+            "title": _("My site"),
+            "link": "https://example.com",
+        },
+        # ...
+    ],
+    "SITE_URL": "/",
+    # "SITE_ICON": lambda request: static("icon.svg"),  # both modes, optimise for 32px height
+    "SITE_ICON": {
+        "light": lambda request: static("icon-light.svg"),  # light mode
+        "dark": lambda request: static("icon-dark.svg"),  # dark mode
+    },
+    # "SITE_LOGO": lambda request: static("logo.svg"),  # both modes, optimise for 32px height
+    "SITE_LOGO": {
+        "light": lambda request: static("logo-light.svg"),  # light mode
+        "dark": lambda request: static("logo-dark.svg"),  # dark mode
+    },
+    "SITE_SYMBOL": "speed",  # symbol from icon set
+    "SITE_FAVICONS": [
+        {
+            "rel": "icon",
+            "sizes": "32x32",
+            "type": "image/svg+xml",
+            "href": lambda request: static("favicon.svg"),
+        },
+    ],
+    "SHOW_HISTORY": True, # show/hide "History" button, default: True
+    "SHOW_VIEW_ON_SITE": True, # show/hide "View on site" button, default: True
+    "SHOW_BACK_BUTTON": False, # show/hide "Back" button on changeform in header, default: False
+    "ENVIRONMENT": "sample_app.environment_callback", # environment name in header
+    "ENVIRONMENT_TITLE_PREFIX": "sample_app.environment_title_prefix_callback", # environment name prefix in title tag
+    "DASHBOARD_CALLBACK": "sample_app.dashboard_callback",
+    "THEME": "dark", # Force theme: "dark" or "light". Will disable theme switcher
+    "LOGIN": {
+        "image": lambda request: static("sample/login-bg.jpg"),
+        "redirect_after": lambda request: reverse_lazy("admin:APP_MODEL_changelist"),
+    },
+    "STYLES": [
+        lambda request: static("css/style.css"),
+    ],
+    "SCRIPTS": [
+        lambda request: static("js/script.js"),
+    ],
+    "BORDER_RADIUS": "6px",
+    "COLORS": {
+        "base": {
+            "50": "249 250 251",
+            "100": "243 244 246",
+            "200": "229 231 235",
+            "300": "209 213 219",
+            "400": "156 163 175",
+            "500": "107 114 128",
+            "600": "75 85 99",
+            "700": "55 65 81",
+            "800": "31 41 55",
+            "900": "17 24 39",
+            "950": "3 7 18",
+        },
+        "primary": {
+            "50": "250 245 255",
+            "100": "243 232 255",
+            "200": "233 213 255",
+            "300": "216 180 254",
+            "400": "192 132 252",
+            "500": "168 85 247",
+            "600": "147 51 234",
+            "700": "126 34 206",
+            "800": "107 33 168",
+            "900": "88 28 135",
+            "950": "59 7 100",
+        },
+        "font": {
+            "subtle-light": "var(--color-base-500)",  # text-base-500
+            "subtle-dark": "var(--color-base-400)",  # text-base-400
+            "default-light": "var(--color-base-600)",  # text-base-600
+            "default-dark": "var(--color-base-300)",  # text-base-300
+            "important-light": "var(--color-base-900)",  # text-base-900
+            "important-dark": "var(--color-base-100)",  # text-base-100
+        },
+    },
+    "EXTENSIONS": {
+        "modeltranslation": {
+            "flags": {
+                "en": "🇬🇧",
+                "fr": "🇫🇷",
+                "nl": "🇧🇪",
+            },
+        },
+    },
+    "SIDEBAR": {
+        "show_search": False,  # Search in applications and models names
+        "show_all_applications": False,  # Dropdown with all applications and models
+        "navigation": [
+            {
+                "title": _("Navigation"),
+                "separator": True,  # Top border
+                "collapsible": True,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Dashboard"),
+                        "icon": "dashboard",  # Supported icon set: https://fonts.google.com/icons
+                        "link": reverse_lazy("admin:index"),
+                        "badge": "sample_app.badge_callback",
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": _("Users"),
+                        "icon": "people",
+                        "link": reverse_lazy("admin:auth_user_changelist"),
+                    },
+                ],
+            },
+        ],
+    },
+    "TABS": [
+        {
+            "models": [
+                "app_label.model_name_in_lowercase",
+            ],
+            "items": [
+                {
+                    "title": _("Your custom title"),
+                    "link": reverse_lazy("admin:app_label_model_name_changelist"),
+                    "permission": "sample_app.permission_callback",
+                },
+            ],
+        },
+    ],
+}
+
+
+def dashboard_callback(request, context):
+    """
+    Callback to prepare custom variables for index template which is used as dashboard
+    template. It can be overridden in application by creating custom admin/index.html.
+    """
+    context.update(
+        {
+            "sample": "example",  # this will be injected into templates/admin/index.html
+        }
+    )
+    return context
+
+
+def environment_callback(request):
+    """
+    Callback has to return a list of two values represeting text value and the color
+    type of the label displayed in top right corner.
+    """
+    return ["Production", "danger"] # info, danger, warning, success
+
+
+def badge_callback(request):
+    return 3
+
+def permission_callback(request):
+    return request.user.has_perm("sample_app.change_model")
+
+    ModelAdmin options
+Each admin class has to inherit from unfold.admin.ModelAdmin to get access to all available options. By using django.contrib.admin.ModelAdmin the options are not going to work and admin pages will be missing styling and features provided by Unfold.
+
+# admin.py
+
+from django import models
+from django.contrib import admin
+from django.contrib.postgres.fields import ArrayField
+from django.db import models
+from unfold.admin import ModelAdmin
+from unfold.contrib.forms.widgets import ArrayWidget, WysiwygWidget
+
+
+@admin.register(MyModel)
+class CustomAdminClass(ModelAdmin):
+    # Display fields in changeform in compressed mode
+    compressed_fields = True  # Default: False
+
+    # Warn before leaving unsaved changes in changeform
+    warn_unsaved_form = True  # Default: False
+
+    # Preprocess content of readonly fields before render
+    readonly_preprocess_fields = {
+        "model_field_name": "html.unescape",
+        "other_field_name": lambda content: content.strip(),
+    }
+
+    # Display submit button in filters
+    list_filter_submit = False
+
+    # Display changelist in fullwidth
+    list_fullwidth = False
+
+    # Set to False, to enable filter as "sidebar"
+    list_filter_sheet = True
+
+    # Position horizontal scrollbar in changelist at the top
+    list_horizontal_scrollbar_top = False
+
+    # Dsable select all action in changelist
+    list_disable_select_all = False
+
+    # Custom actions
+    actions_list = []  # Displayed above the results list
+    actions_row = []  # Displayed in a table row in results list
+    actions_detail = []  # Displayed at the top of for in object detail
+    actions_submit_line = []  # Displayed near save in object detail
+
+    # Changeform templates (located inside the form)
+    change_form_before_template = "some/template.html"
+    change_form_after_template = "some/template.html"
+
+    # Located outside of the form
+    change_form_outer_before_template = "some/template.html"
+    change_form_outer_after_template = "some/template.html"
+
+    # Display cancel button in submit line in changeform
+    change_form_show_cancel_button = True # show/hide cancel button in changeform, default: False
+
+    formfield_overrides = {
+        models.TextField: {
+            "widget": WysiwygWidget,
+        },
+        ArrayField: {
+            "widget": ArrayWidget,
+        }
+    }
+
+
+Site dropdown
+Unfold provides a possibility to specify a dropdown navigation in sidebar when clicking on the site header by using SITE_DROPDOWN option in UNFOLD configuration dictionary. When this option is set, a dropdown icon will display on the site header to mark that site header is clickable.
+
+# settings.py
+
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+
+UNFOLD = {
+    "SITE_DROPDOWN": [
+        {
+            "icon": "diamond",
+            "title": _("My site"),
+            "link": "https://example.com",
+        },
+        {
+            "icon": "diamond",
+            "title": _("My site"),
+            "link": reverse_lazy("admin:index"),
+        },
+    ]
+}
+
+
+Conditional fields
+Django Unfold offers a powerful feature for creating dynamic forms through conditional fields. This functionality allows you to control the visibility of specific form fields based on the values of other fields in your form. By implementing conditional logic, you can create more intuitive and streamlined user interfaces that only display relevant fields when they're needed.
+
+With conditional fields, you can:
+
+Show or hide fields based on the state of other form inputs
+Create cleaner, less cluttered forms by revealing fields only when necessary
+Improve the user experience by presenting a more focused interface
+The conditional display is powered by Alpine.js expressions, giving you flexibility in defining when fields should appear.
+
+# models.py
+
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
+
+
+class User(AbstractUser):
+    different_address = models.BooleanField(_("different address"), default=False)
+    country = models.CharField(_("city"), max_length=255, null=True, blank=True, default=None)
+    city = models.CharField(_("city"), max_length=255, null=True, blank=True, default=None)
+    address = models.CharField(_("address"), max_length=255, null=True, blank=True, default=None)
+
+    class Meta:
+        db_table = "users"
+        verbose_name = _("user")
+        verbose_name_plural = _("users")
+Implementing Conditional Fields
+Using the model defined above, we can implement conditional field display by configuring the conditional_fields dictionary in our ModelAdmin class. This powerful feature allows for dynamic form behavior based on user input.
+
+The conditional_fields dictionary uses a straightforward key-value structure: - Each key corresponds to a field name from your model that you want to conditionally display - Each value contains JavaScript/Alpine.js expression that evaluates to either true or false, determining whether the field should be visible
+
+When a user interacts with your form, Django Unfold evaluates these expressions in real-time, showing or hiding fields accordingly. This creates a responsive, interactive experience without requiring page reloads.
+
+For fields that use multiple widgets (like SplitDateTimeField), Django Unfold automatically handles the complexity by assigning numeric suffixes to each widget component. For example, a date-time field named date_start would have its widgets accessible as date_start_0 and date_start_1 in your conditional expressions.
+
+This approach is particularly useful for complex forms where certain information is only relevant based on specific user choices, helping to reduce visual clutter and guide users through your interface more effectively.
+
+# admin.py
+
+from django.contrib import admin
+from unfold.admin import ModelAdmin
+
+from .models import User
+
+
+@admin.register(User)
+class UserAdmin(ModelAdmin):
+    conditional_fields = {
+        "country": "different_address == true"
+        "city": "different_address == true"
+        "address": "different_address == true"
+    }
+
+Filters
+By default, Django admin handles all filters as regular HTML links pointing at the same URL with different query parameters. This approach is for basic filtering more than enough. In the case of more advanced filtering by incorporating input fields, it is not going to work.
+
+All custom filters implemented in Unfold are located in separate application unfold.contrib.filters. In order to use these filters, it is required to add this application into INSTALLED_APPS in settings.py right after unfold application.
+
+# settings.py
+
+INSTALLED_APPS = [
+    "unfold",
+    "unfold.contrib.filters",
+]
+Note: when implementing a filter which contains input fields, there is a no way that user can submit the values, because default filters does not contain submit button. To implement submit button, unfold.admin.ModelAdmin contains boolean list_filter_submit flag which enables submit button in filter form.
+
+
+Text filters
+Text input field which allows filtering by the free string submitted by the user. There are two different variants of this filter: FieldTextFilter and TextFilter.
+
+FieldTextFilter requires just a model field name and the filter will make __icontains search on this field. There are no other things to configure so the integration in list_filter will be just one new row looking like ("model_field_name", FieldTextFilter).
+
+In the case of the TextFilter, it is needed to write a whole new class inheriting from TextFilter with a custom implementation of the queryset method and the parameter_name attribute. This attribute will be a representation of the search query parameter name in URI. The benefit of the TextFilter is the possibility of writing complex queries.
+
+from django.contrib import admin
+from django.contrib.auth.models import User
+from django.core.validators import EMPTY_VALUES
+from django.utils.translation import gettext_lazy as _
+from unfold.admin import ModelAdmin
+from unfold.contrib.filters.admin import TextFilter, FieldTextFilter
+
+class CustomTextFilter(TextFilter):
+    title = _("Custom filter")
+    parameter_name = "query_param_in_uri"
+
+    def queryset(self, request, queryset):
+        if self.value() not in EMPTY_VALUES:
+            # Here write custom query
+            return queryset.filter(your_field=self.value())
+
+        return queryset
+
+
+@admin.register(User)
+class MyAdmin(ModelAdmin):
+    list_filter_submit = True  # Submit button at the bottom of the filter
+    list_filter = [
+        ("model_charfield", FieldTextFilter),
+        CustomTextFilter
+    ]
+
+Datetime filters
+Unfold provides two different types of datetime filters: RangeDateFilter and RangeDateTimeFilter. Both of them are implemented in unfold.contrib.filters so make sure this app is in your INSTALLED_APPS in settings.py.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.auth.models import User
+
+from unfold.admin import ModelAdmin
+from unfold.contrib.filters.admin import RangeDateFilter, RangeDateTimeFilter
+
+
+@admin.register(User)
+class YourModelAdmin(ModelAdmin):
+    list_filter_submit = True  # Submit button at the bottom of the filter
+    list_filter = (
+        ("field_E", RangeDateFilter),  # Date filter
+        ("field_F", RangeDateTimeFilter),  # Datetime filter
+    )
+
+
+Dropdown filters
+Dropdown filters will display a select field with a list of options. Unfold contains two types of dropdowns: ChoicesDropdownFilter and RelatedDropdownFilter.
+
+The difference between them is that ChoicesDropdownFilter will collect a list of options based on the choices attribute of the model field so most commonly it will be used in combination with CharField with specified choices. On the other hand, RelatedDropdownFilter needs a one-to-many or many-to-many foreign key to display options.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.auth.models import User
+from unfold.admin import ModelAdmin
+from unfold.contrib.filters.admin import (
+    ChoicesDropdownFilter,
+    MultipleChoicesDropdownFilter,
+    RelatedDropdownFilter,
+    MultipleRelatedDropdownFilter,
+    DropdownFilter,
+    MultipleDropdownFilter
+)
+
+
+class CustomDropdownFilter(DropdownFilter):
+    title = _("Custom dropdown filter")
+    parameter_name = "query_param_in_uri"
+
+    def lookups(self, request, model_admin):
+        return [
+            ["option_1", _("Option 1")],
+            ["option_2", _("Option 2")],
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() not in EMPTY_VALUES:
+            # Here write custom query
+            return queryset.filter(your_field=self.value())
+
+        return queryset
+
+
+@admin.register(User)
+class MyAdmin(ModelAdmin):
+    list_filter_submit = True  # Submit button at the bottom of the filter
+    list_filter = [
+        CustomDropdownFilter,
+        ("modelfield_with_choices", ChoicesDropdownFilter),
+        ("modelfield_with_choices_multiple", MultipleChoicesDropdownFilter),
+        ("modelfield_with_foreign_key", RelatedDropdownFilter)
+        ("modelfield_with_foreign_key_multiple", MultipleRelatedDropdownFilter)
+    ]
+Note: At the moment Unfold does not implement a dropdown with an autocomplete functionality, so it is important not to use dropdowns displaying large datasets.
+
+Note: All dropdowns are using Select2 for better UX by default. Native implementation with simple select dropdown is not available.
+
+
+Numeric filters
+Currently, Unfold implements numeric filters inside unfold.contrib.filters application. In order to use these filters, it is required to add this application into INSTALLED_APPS in settings.py right after unfold application.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.auth.models import User
+
+from unfold.admin import ModelAdmin
+from unfold.contrib.filters.admin import (
+    RangeNumericListFilter,
+    RangeNumericFilter,
+    SingleNumericFilter,
+    SliderNumericFilter,
+)
+
+
+class CustomSliderNumericFilter(SliderNumericFilter):
+    MAX_DECIMALS = 2
+    STEP = 10
+
+
+class CustomRangeNumericListFilter(RangeNumericListFilter):
+    parameter_name = "items_count"
+    title = "items"
+
+
+@admin.register(User)
+class YourModelAdmin(ModelAdmin):
+    list_filter_submit = True  # Submit button at the bottom of the filter
+    list_filter = (
+        ("field_A", SingleNumericFilter),  # Numeric single field search, __gte lookup
+        ("field_B", RangeNumericFilter),  # Numeric range search, __gte and __lte lookup
+        ("field_C", SliderNumericFilter),  # Numeric range filter but with slider
+        ("field_D", CustomSliderNumericFilter),  # Numeric filter with custom attributes
+        CustomRangeNumericListFilter,  # Numeric range search not restricted to a model field
+    )
+
+    def get_queryset(self, request):
+        return super().get_queryset().annotate(items_count=Count("item", distinct=True))
+
+
+Autocomplete filters
+Unfold provides two different types of autocomplete filters: AutocompleteSelectFilter and AutocompleteSelectMultipleFilter. Both of them are implemented in unfold.contrib.filters so make sure this app is in your INSTALLED_APPS in settings.py.
+
+All the referenced fields must be ForeignKey or ManyToManyField fields and the same time the referenced admin model must have defined search_fields attribute otherwise the application will raise an error.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.auth.models import User
+
+from unfold.admin import ModelAdmin
+from unfold.contrib.filters.admin import (
+    AutocompleteSelectFilter,
+    AutocompleteSelectMultipleFilter
+)
+
+@admin.register(User)
+class YourModelAdmin(ModelAdmin):
+    list_filter = (
+        # Autocomplete filter
+        ["other_model_field", AutocompleteSelectFilter],
+
+        # Autocomplete multiple filter
+        ["other_multiple_model_field", AutocompleteSelectMultipleFilter],
+    )
+
+class OtherModelAdmin(ModelAdmin):
+    search_fields = ["name"]
+
+
+Horizontal layout filter
+Unfold provides a horizontal layout for filter choices in the changelist view. By default, the layout for filter choices is vertical but by providing the horizontal attribute set to True to the filter class, the layout will be horizontal.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.admin.filters import ChoicesFieldListFilter
+
+from unfold.admin import ModelAdmin
+
+
+User = get_user_model()
+
+class HorizontalChoicesFieldListFilter(ChoicesFieldListFilter):
+    horizontal = True # Enable horizontal layout
+
+
+@admin.register(User)
+class UserAdmin(ModelAdmin):
+    list_filter = (
+        ["other_model_field", HorizontalChoicesFieldListFilter],
+    )
+
+
+Actions
+It is highly recommended to read the base Django actions documentation before reading this section, since Unfold actions are derived from Django actions.
+
+# admin.py
+
+from django.auth.models import User
+from django.contrib import admin
+from django.db.models import QuerySet
+from django.http import HttpRequest
+from unfold.admin import ModelAdmin
+from unfold.decorators import action
+
+@admin.register(User)
+class UserAdmin(ModelAdmin):
+    actions_list = ["custom_action"]
+
+    @action(description="Custom action", icon="person")
+    def custom_action(self, request: HttpRequest, queryset: QuerySet):
+        pass
+Icon support
+Unfold supports custom icons for actions. Icons are supported for all actions types. You can set the icon for an action by providing icon parameter to the @action decorator.
+
+# admin.py
+
+from django.db.models import QuerySet
+from django.http import HttpRequest
+
+from unfold.decorators import action
+
+@action(description="Custom action", icon="person")
+def custom_action(self, request: HttpRequest, queryset: QuerySet):
+    pass
+Action variants
+In Unfold it is possible to change a color of the action. Unfold supports different variants of actions. You can set the variant for an action by providing variant parameter to the @action decorator.
+
+# admin.py
+
+from django.db.models import QuerySet
+from django.http import HttpRequest
+
+from unfold.decorators import action
+# Import ActionVariant enum from Unfold to set action variant
+from unfold.enums import ActionVariant
+
+# class ActionVariant(Enum):
+#     DEFAULT = "default"
+#     PRIMARY = "primary"
+#     SUCCESS = "success"
+#     INFO = "info"
+#     WARNING = "warning"
+#     DANGER = "danger"
+
+@action(description="Custom action", variant=ActionVariant.PRIMARY)
+def custom_action(self, request: HttpRequest, queryset: QuerySet):
+    pass
+Actions overview
+Besides traditional actions selected from dropdown, Unfold supports several other types of actions. Following table gives overview of all available actions together with their recommended usage:
+
+Type	Appearance	Usage
+Global	Changelist - top	General actions for all instances in listing
+Row	Changelist - each row	Action for one specific instance, executable from listing
+Detail	Changeform - top	Action for one specific instance, executable from detail
+Submit line	Changeform - submit line	Action performed during form submit (instance save)
+For global, row and detail action
+All these actions are based on custom URLs generated for each of them. Handler function for these views is basically function based view.
+
+For actions without intermediate steps, you can write all the logic inside handler directly. Request and object ID are both passed to these action handler functions, so you are free to fetch the instance from database and perform any operations with it. In the end, it is recommended to return redirect back to either detail or listing based on where the action was triggered from.
+
+For actions with intermediate steps, it is recommended to use handler function only to redirect to custom URL with custom view. This view can be extended from base Unfold view, to have unified experience.
+
+
+Changelist actions
+These actions will appear at the top of the changelist page as buttons. Please not that these actions are not displayed in the actions dropdown which is provided by default in Django. Changelist action will not reciver any queryset or object ids, because it is meant to be used for general actions for given model.
+
+# admin.py
+
+from django.contrib.admin import register
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from django.http import HttpRequest
+from unfold.admin import ModelAdmin
+from unfold.decorators import action
+
+
+@register(User)
+class UserAdmin(ModelAdmin):
+    actions_list = ["changelist_action"]
+
+    @action(description=_("Changelist action"), url_path="changelist-action", permissions=["changelist_action"])
+    def changelist_action(self, request: HttpRequest):
+        return redirect(
+          reverse_lazy("admin:users_user_changelist")
+        )
+
+    def has_changelist_action_permission(self, request: HttpRequest):
+        # Write your own bussiness logic. Code below will always display an action.
+        return True
+
+
+Changelist row actions
+These actions will appear on seach row on the changelist page as a dropdown button containing all custom row actions. The permission callback for actions_row does not accept object_id as an argument. Actions can have permission set globally and it is not possible to control permission per row.
+
+# admin.py
+
+from django.contrib.admin import register
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from django.http import HttpRequest
+from unfold.admin import ModelAdmin
+from unfold.decorators import action
+
+
+@register(User)
+class UserAdmin(ModelAdmin):
+    actions_row = ["changelist_row_action"]
+
+    @action(
+        description=_("Changelist row action"),
+        permissions=["changelist_row_action"],
+        url_path="changelist-row-action",
+        attrs={"target": "_blank"}
+    )
+    def changelist_row_action(self, request: HttpRequest, object_id: int):
+        return redirect(
+          reverse_lazy("admin:users_user_changelist")
+        )
+
+    def has_changelist_row_action_permission(self, request: HttpRequest):
+        # Write your own bussiness logic. Code below will always display an action.
+        return True
+
+
+Dropdown filters
+Dropdown filters will display a select field with a list of options. Unfold contains two types of dropdowns: ChoicesDropdownFilter and RelatedDropdownFilter.
+
+The difference between them is that ChoicesDropdownFilter will collect a list of options based on the choices attribute of the model field so most commonly it will be used in combination with CharField with specified choices. On the other hand, RelatedDropdownFilter needs a one-to-many or many-to-many foreign key to display options.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.auth.models import User
+from unfold.admin import ModelAdmin
+from unfold.contrib.filters.admin import (
+    ChoicesDropdownFilter,
+    MultipleChoicesDropdownFilter,
+    RelatedDropdownFilter,
+    MultipleRelatedDropdownFilter,
+    DropdownFilter,
+    MultipleDropdownFilter
+)
+
+
+class CustomDropdownFilter(DropdownFilter):
+    title = _("Custom dropdown filter")
+    parameter_name = "query_param_in_uri"
+
+    def lookups(self, request, model_admin):
+        return [
+            ["option_1", _("Option 1")],
+            ["option_2", _("Option 2")],
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() not in EMPTY_VALUES:
+            # Here write custom query
+            return queryset.filter(your_field=self.value())
+
+        return queryset
+
+
+@admin.register(User)
+class MyAdmin(ModelAdmin):
+    list_filter_submit = True  # Submit button at the bottom of the filter
+    list_filter = [
+        CustomDropdownFilter,
+        ("modelfield_with_choices", ChoicesDropdownFilter),
+        ("modelfield_with_choices_multiple", MultipleChoicesDropdownFilter),
+        ("modelfield_with_foreign_key", RelatedDropdownFilter)
+        ("modelfield_with_foreign_key_multiple", MultipleRelatedDropdownFilter)
+    ]
+Note: At the moment Unfold does not implement a dropdown with an autocomplete functionality, so it is important not to use dropdowns displaying large datasets.
+
+Note: All dropdowns are using Select2 for better UX by default. Native implementation with simple select dropdown is not available.
+
+Numeric filters
+Currently, Unfold implements numeric filters inside unfold.contrib.filters application. In order to use these filters, it is required to add this application into INSTALLED_APPS in settings.py right after unfold application.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.auth.models import User
+
+from unfold.admin import ModelAdmin
+from unfold.contrib.filters.admin import (
+    RangeNumericListFilter,
+    RangeNumericFilter,
+    SingleNumericFilter,
+    SliderNumericFilter,
+)
+
+
+class CustomSliderNumericFilter(SliderNumericFilter):
+    MAX_DECIMALS = 2
+    STEP = 10
+
+
+class CustomRangeNumericListFilter(RangeNumericListFilter):
+    parameter_name = "items_count"
+    title = "items"
+
+
+@admin.register(User)
+class YourModelAdmin(ModelAdmin):
+    list_filter_submit = True  # Submit button at the bottom of the filter
+    list_filter = (
+        ("field_A", SingleNumericFilter),  # Numeric single field search, __gte lookup
+        ("field_B", RangeNumericFilter),  # Numeric range search, __gte and __lte lookup
+        ("field_C", SliderNumericFilter),  # Numeric range filter but with slider
+        ("field_D", CustomSliderNumericFilter),  # Numeric filter with custom attributes
+        CustomRangeNumericListFilter,  # Numeric range search not restricted to a model field
+    )
+
+    def get_queryset(self, request):
+        return super().get_queryset().annotate(items_count=Count("item", distinct=True))
+
+
+Changelist tabs
+In changelist view, it is possible to add custom tab navigation. It can consist from various custom links which can point at another registered admin models. The configuration is done in UNFOLD dictionary in settings.py.
+
+# settings.py
+
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+UNFOLD = {
+    "TABS": [
+        {
+            # Which models are going to display tab navigation
+            "models": [
+                "app_label.model_name_in_lowercase",
+            ],
+            # List of tab items
+            "items": [
+                {
+                    "title": _("Your custom title"),
+                    "link": reverse_lazy("admin:app_label_model_name_changelist"),
+                    "permission": "sample_app.permission_callback",
+                },
+                {
+                    "title": _("Another custom title"),
+                    "link": reverse_lazy("admin:app_label_another_model_name_changelist"),
+                    "permission": "sample_app.permission_callback",
+                },
+            ],
+        },
+    ],
+}
+
+# Permission callback for tab item
+def permission_callback(request):
+    return request.user.has_perm("sample_app.change_model")
+
+
+Changeform tabs
+In changeform view, it is possible to add custom tab navigation. It can consist from various custom links which can point at another registered admin models. The configuration is done in UNFOLD dictionary in settings.py.
+
+Actually, the changeform tab navigation configuration is the same as the changelist tab navigation configuration. The only difference is that in models section it is required to specify model name as dictionary with detail key set to True.
+
+# settings.py
+
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+UNFOLD = {
+    "TABS": [
+        {
+            # Which changeform models are going to display tab navigation
+            "models": [
+                {
+                    "app_label.model_name_in_lowercase",
+                    "detail": True, # Displays tab navigation on changeform page
+                },
+            ],
+            # List of tab items
+            "items": [
+                {
+                    "title": _("Your custom title"),
+                    "link": reverse_lazy("admin:app_label_model_name_changelist"),
+                    "permission": "sample_app.permission_callback",
+                },
+                {
+                    "title": _("Another custom title"),
+                    "link": reverse_lazy("admin:app_label_another_model_name_changelist"),
+                    "permission": "sample_app.permission_callback",
+                },
+            ],
+        },
+    ],
+}
+
+# Permission callback for tab item
+def permission_callback(request):
+    return request.user.has_perm("sample_app.change_model")
+
+Fieldsets tabs
+When the change form contains a lot of fieldsets, sometimes it is better to group them into tabs so it will not be needed to scroll. To mark a fieldset for tab navigation it is required to add a tab CSS class to the fieldset. Once the fieldset contains tab class it will be recognized in a template and grouped into tab navigation. Each tab must contain its name. If the name is not available, it will be not included in the tab navigation.
+
+# admin.py
+
+from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
+from unfold.admin import ModelAdmin
+
+from .models import MyModel
+
+
+@admin.register(MyModel)
+class MyModelAdmin(ModelAdmin):
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": [
+                    "field_1",
+                    "field_2",
+                ],
+            },
+        ),
+        (
+            _("Tab 1"),
+            {
+                "classes": ["tab"],
+                "fields": [
+                    "field_3",
+                    "field_4",
+                ],
+            },
+        ),
+        (
+            _("Tab 2"),
+            {
+                "classes": ["tab"],
+                "fields": [
+                    "field_5",
+                    "field_6",
+                ],
+            },
+        ),
+    )
+Note: These tabs are not displayed at the top of the page as other tabs. They are shown in the main content area as one fieldset with smaller tab navigation.
+
+Inlines tabs
+Inlines can be grouped into tab navigation by specifying tab attribute in the inline class. This behavior is enabled on changeform pages and it is not possible to add other custom tabs into tab navigation without writing custom code.
+
+# admin.py
+
+from django.contrib.auth.models import User
+from unfold.admin import StackedInline, TabularInline
+
+
+class MyTabularInline(TabularInline):
+    model = User
+    tab = True
+
+class MyStackedInline(StackedInline):
+    model = User
+    tab = True
+
+
+Dynamic tabs
+Unfold provides a way to dynamically generate tab navigation. It is possible to use your own logic to generate tab navigation. The tab navigation configuration can be defined as importable string which will call a function with HttpRequest object as an argument. In this function it is possible to build own tabs navigation structure.
+
+# settings.py
+
+UNFOLD = {
+    "TABS": "your_project.admin.tabs_callback"
+}
+Below is an example of how to build own tabs navigation structure in tabs callback function. Based on the request object it is possible to write own logic for the tab navigation structure.
+
+# admin.py
+
+from django.http import HttpRequest
+
+
+def tabs_callback(request: HttpRequest) -> list[dict[str, Any]]:
+    return [
+        {
+            # Unique tab identifier to render tabs in custom templates
+            "page": "custom_page",
+
+            # Applies for the changeform view
+            "models": [
+                {
+                    "name": "app_label.model_name_in_lowercase",
+                    "detail": True
+                },
+            ],
+            "items": [
+                {
+                    "title": _("Your custom title"),
+                    "link": reverse_lazy("admin:app_label_model_name_changelist"),
+                    "is_active": True # Configure active tab
+                },
+            ],
+        },
+    ],
+Rendering tabs in custom templates
+Unfold provides a tab_list template tag which can be used to render tabs in custom templates. The only required argument is the page name which is defined in TABS structure on particular tab navigation. Configure page key to something unique and then use tab_list template tag in your custom template where the first parameter is the unique page name.
+
+# settings.py
+
+from django.http import HttpRequest
+
+UNFOLD = {
+    "TABS": [
+        {
+            "page": "custom_page", # Unique tab identifier
+            "items": [
+                {
+                    "title": _("Your custom title"),
+                    "link": reverse_lazy("admin:app_label_model_name_changelist"),
+                },
+            ],
+        }
+    ]
+}
+Below is an example of how to render tabs in custom templates. It is important to load unfold template tags before using tab_list template tag.
+
+{% extends "admin/base_site.html" %}
+
+{% load unfold %}
+
+{% block content %}
+    {% tab_list "custom_page" %}
+{% endblock %}
+Note: When it comes which tab item is active on custom page, it is not up to Unfold to find out a way how to mark links as active. The tab configuration provides is_active key which you can use to set active tab item.
+
+
+Unfold widget ArrayWidget
+# settings.py
+
+INSTALLED_APPS = [
+    "unfold",
+    "unfold.contrib.forms",
+]
+Below you can see how to use ArrayWidget in your admin class. In this example, all ArrayField fields will use ArrayWidget to render input fields. If choices are provided for the widget, a dropdown list will be used instead of a text input.
+
+When it comes to providing choices for the widget, by default the widget does not have any information about the field's choices, so it is mandatory to provide them manually. You can do this in the get_form method where the widget is initialized with the choices parameter.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.postgres.fields import ArrayField
+from django.db.models import TextChoices
+from django.utils.translation import gettext_lazy as _
+
+from unfold.admin import ModelAdmin
+from unfold.contrib.forms.widgets import ArrayWidget
+
+
+class SomeChoices(TextChoices):
+    OPTION_1 = "OPTION_1", _("Option 1")
+    OPTION_2 = "OPTION_2", _("Option 2")
+
+
+@admin.register(MyModel)
+class CustomAdminClass(ModelAdmin):
+    formfield_overrides = {
+        ArrayField: {
+            "widget": ArrayWidget,
+        }
+    }
+
+    # If you need to provide choices for the widget, you can do it in the get_form method.
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        form = super().get_form(request, obj, change, **kwargs)
+        form.base_fields["array_field"].widget = ArrayWidget(choices=SomeChoices)
+        return form
+
+Unfold widget WysiwygWidget
+To use WysiwygWidget, you need to have unfold.contrib.forms in INSTALLED_APPS which is required dependency. The WYSIWYG widget is based on Trix editor.
+
+# settings.py
+
+INSTALLED_APPS = [
+    "unfold",
+    "unfold.contrib.forms",
+]
+Below is simple example replacing all TextField fields with WysiwygWidget in admin particular admin class. At the moment WysiwygWidget does not support file upload but it is still possible to manually upload an image and then link it into the content area.
+
+# admin.py
+
+from django.db import models
+from unfold.admin import ModelAdmin
+from unfold.contrib.forms.widgets import WysiwygWidget
+
+
+@admin.register(MyModel)
+class CustomAdminClass(ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {
+            "widget": WysiwygWidget,
+        }
+    }
+
+Inlines
+Unfold inlines are derived from Django inlines, and they are used to add extra styling and configuration options. Native inline classes StackedInline and TabularInline are going work but the styling will not match default Unfold design thus it is recommended to use inlines derived from Unfold.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.auth.models import User
+from unfold.admin import StackedInline, TabularInline
+
+
+class MyStackedInline(StackedInline):
+    model = User
+
+
+class MyTabularInline(TabularInline):
+    model = User
+
+
+@admin.register(User)
+class UserAdmin(ModelAdmin):
+    inlines = [MyStackedInline, MyTabularInline]
+
+Available options for Unfold inlines
+By default, the title available for each inline row is coming from the __str__ implementation of the model. Unfold allows you to override this title by implementing get_inline_title on the model which can return your own custom title just for the inline.
+
+from django.contrib.auth.models import User
+from unfold.admin import TabularInline
+
+
+class User(models.Model):
+    # fiels, meta ...
+
+    def get_inline_title(self):
+        return "Custom title"
+
+
+class MyInline(TabularInline):
+    model = User
+Hide title row
+By applying hide_title attribute set to True, it is possible to hide the title row which is available for StackedInline or TabularInline. For StackedInline it is required to have disabled delete permission can_delete to be able to hide the title row, because the checkbox with the delete action is inside this title.
+
+# admin.py
+
+from django.contrib.auth.models import User
+from unfold.admin import TabularInline
+
+
+class MyInline(TabularInline):
+    model = User
+    hide_title = True
+
+Nonrelated inlines
+To display inlines which are not related (no foreign key pointing at the main model) to the model instance in changeform, you can use nonrelated inlines which are included in unfold.contrib.inlines module. Make sure this module is included in INSTALLED_APPS in settings.py.
+
+from django.contrib.auth.models import User
+from unfold.admin import ModelAdmin
+from unfold.contrib.inlines.admin import NonrelatedTabularInline
+from .models import OtherModel
+
+class OtherNonrelatedInline(NonrelatedTabularInline):  # NonrelatedStackedInline is available as well
+    model = OtherModel
+    fields = ["field1", "field2"]  # Ignore property to display all fields
+
+    def get_form_queryset(self, obj):
+        """
+        Gets all nonrelated objects needed for inlines. Method must be implemented.
+        """
+        return self.model.objects.all()
+
+    def save_new_instance(self, parent, instance):
+        """
+        Extra save method which can for example update inline instances based on current
+        main model object. Method must be implemented.
+        """
+        pass
+
+
+@admin.register(User)
+class UserAdmin(ModelAdmin):
+    inlines = [OtherNonrelatedInline]
+NOTE: credit for this functionality goes to django-nonrelated-inlines
+
+Sortable inlines
+Unfold allows you to sort inlines by adding a ordering_field to the inline class. This field will be used to sort the inlines in the admin panel. There is also an option to hide the ordering field from the UI by setting hide_ordering_field to True.
+
+The model field used for ordering must be a PositiveIntegerField with db_index=True
+Sorting newly added records does not work. You need so save new records first and then sort
+The sorting functionality is not available on changelist view.
+# admin.py
+
+from unfold.admin import TabularInline
+from .models import User
+
+
+# This works for StackedInline as well
+class MyInline(TabularInline):
+    model = User
+    ordering_field = "weight"
+    hide_ordering_field = True
+    list_display = ["email", "weight"]  # Weight is mandatory field
+In order to use the sorting functionality, you need to create a model field with a PositiveIntegerField type and set db_index=True where the Unfold admin will store the sorting order.
+
+# models.py
+
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+
+class User(models.Model):
+    weight = models.PositiveIntegerField(_("weight"), default=0, db_index=True)
+
+JsonField formatting and syntax highlighting
+At the moment, Unfold provides some basic JSON formatting and syntax highlighting but only in case the JSON field is in admin configuration in readonly_fields list. Otherwise, the field is displayed as plain text by using UnfoldAdminTextareaWidget.
+
+Once the JSON field is in readonly_fields and at the same time Pygments library is installed (pip install pygments), the field is displayed with syntax highlighting and formatting. If Pygments is not installed, the field is displayed without formatting as it is. If the library is not available, Unfold will NOT throw any errors.
+
+Basic formatting without Pygments
+Without the Pygments library, it is still possible to add at least some basic formatting to the JSON field by using example PrettyJSONEncoder encoder below.
+
+# encoders.py
+
+import json
+
+
+class PrettyJSONEncoder(json.JSONEncoder):
+    def __init__(self, *args, indent, sort_keys, **kwargs):
+        super().__init__(*args, indent=4, sort_keys=True, **kwargs)
+Once we have this encoder, we will use it in the field definition in the models.py file. This encoder will format JSON when the field value is saved to the database so if you check the raw value in the database, it will be formatted.
+
+# models.py
+
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+class CustomModel(models.Model):
+    data = models.JSONField(_("data"), null=True, blank=True, encoder=PrettyJSONEncoder)
+Again, we need to register the model in the admin.py file and make sure the new JSON field is in readonly_fields list to make sure it will be display with formatted content.
+
+# admin.py
+
+from django.contrib import admin
+from unfold.admin import ModelAdmin
+
+
+@admin.register(CustomModel)
+class CustomAdminClass(ModelAdmin):
+    readonly_fields = ["data"]
+
+
+Unfold @display decorator
+Unfold introduces it's own unfold.decorators.display decorator. By default it has exactly same behavior as native django.contrib.admin.decorators.display but it adds same customizations which helps to extends default logic.
+
+@display(label=True), @display(label={"value1": "success"}) displays a result as a label. This option fits for different types of statuses. Label can be either boolean indicating we want to use label with default color or dict where the dict is responsible for displaying labels in different colors. At the moment these color combinations are supported: success(green), info(blue), danger(red) and warning(orange).
+
+@display(header=True) displays in results list two information in one table cell. Good example is when we want to display customer information, first line is going to be customer's name and right below the name display corresponding email address. Method with such a decorator is supposed to return a list with two elements return "Full name", "E-mail address". There is a third optional argument, which is type of the string and its value is displayed in a circle before first two values on the front end. Its optimal usage is for displaying initials.
+
+# admin.py
+
+from django.db.models import TextChoices
+from django.utils.translation import gettext_lazy as _
+
+from unfold.admin import ModelAdmin
+from unfold.decorators import display
+
+
+class UserStatus(TextChoices):
+    ACTIVE = "ACTIVE", _("Active")
+    PENDING = "PENDING", _("Pending")
+    INACTIVE = "INACTIVE", _("Inactive")
+    CANCELLED = "CANCELLED", _("Cancelled")
+
+
+class UserAdmin(ModelAdmin):
+    list_display = [
+        "display_as_two_line_heading",
+        "show_status",
+        "show_status_with_custom_label",
+    ]
+
+    @display(
+        description=_("Status"),
+        ordering="status",
+        label=True
+    )
+    def show_status_default_color(self, obj):
+        return obj.status
+
+    @display(
+        description=_("Status"),
+        ordering="status",
+        label={
+            UserStatus.ACTIVE: "success",  # green
+            UserStatus.PENDING: "info",  # blue
+            UserStatus.INACTIVE: "warning",  # orange
+            UserStatus.CANCELLED: "danger",  # red
+        },
+    )
+    def show_status_customized_color(self, obj):
+        return obj.status
+
+    @display(description=_("Status with label"), ordering="status", label=True)
+    def show_status_with_custom_label(self, obj):
+        return obj.status, obj.get_status_display()
+
+    @display(header=True)
+    def display_as_two_line_heading(self, obj):
+        """
+        Third argument is short text which will appear as prefix in circle
+        """
+        return [
+            "First main heading",
+            "Smaller additional description",  # Use None in case you don't need it
+            "AB",  # Short text which will appear in front of
+            # Image instead of initials. Initials are ignored if image is available
+            {
+                "path": "some/path/picture.jpg",
+                "squared": True, # Picture is displayed in square format, if empty circle
+                "borderless": True,  # Picture will be displayed without border
+                "width": 64, # Removes default width. Use together with height
+                "height": 48, # Removes default height. Use together with width
+            }
+        ]
+
+Unfold @action decorator
+Unfold also uses custom @action decorator, supporting 2 more parameters in comparison to base @action decorator:
+
+url_path: Action path name, used to override the path under which the action will be available (if not provided, URL path will be generated by Unfold)
+attrs: Dictionary of the additional attributes added to the <a> element, used for e.g. opening action in new tab ({"target": "_blank"})
+
+Loading styles and scripts
+To add custom styles, for example for a custom dashboard, you can load them via the STYLES key in the UNFOLD dictionary in settings.py. This key accepts a list of strings or lambda functions that will be loaded on all pages. JavaScript files can be loaded using a similar approach with the SCRIPTS key.
+
+# settings.py
+
+from django.templatetags.static import static
+
+UNFOLD = {
+    "STYLES": [
+        lambda request: static("css/styles.css"),
+    ],
+    "SCRIPTS": [
+        lambda request: static("js/scripts.js"),
+    ],
+}
+Note: When deploying to production, make sure to run the python manage.py collectstatic command to collect all static files. This ensures that all custom styles and scripts are properly included in the production build.
+
+
+Loading Tailwind stylesheet in Django project
+When creating a custom dashboard or adding custom components, you may need to add your own styles to provide styling for new elements. The way styles can be loaded is described in the previous section. Once the styles are loaded, you can write CSS selectors with properties. This is sufficient if you don't need to use Tailwind.
+
+Before starting with the Tailwind configuration at the project level, you need to install Tailwind CSS into your project by running npm install tailwindcss in the project directory. Don't forget to add package.json and package-lock.json to your repository.
+
+Most likely, you'll want new elements to match the rest of the administration panel. First, create a tailwind.config.js file in your application. Below is the minimal configuration that contains color specifications so all Tailwind classes like bg-primary-600 will match the admin theme.
+
+// tailwind.config.js
+
+module.exports = {
+  // Support dark mode classes
+  darkMode: "class",
+  // Your project's files to scan for Tailwind classes
+  content: ["./your_project/**/*.{html,py,js}"],
+  theme: {
+    extend: {
+      // Colors that match with UNFOLD["COLORS"] settings
+      colors: {
+        base: {
+          50: "rgb(var(--color-base-50) / <alpha-value>)",
+          100: "rgb(var(--color-base-100) / <alpha-value>)",
+          200: "rgb(var(--color-base-200) / <alpha-value>)",
+          300: "rgb(var(--color-base-300) / <alpha-value>)",
+          400: "rgb(var(--color-base-400) / <alpha-value>)",
+          500: "rgb(var(--color-base-500) / <alpha-value>)",
+          600: "rgb(var(--color-base-600) / <alpha-value>)",
+          700: "rgb(var(--color-base-700) / <alpha-value>)",
+          800: "rgb(var(--color-base-800) / <alpha-value>)",
+          900: "rgb(var(--color-base-900) / <alpha-value>)",
+          950: "rgb(var(--color-base-950) / <alpha-value>)",
+        },
+        primary: {
+          50: "rgb(var(--color-primary-50) / <alpha-value>)",
+          100: "rgb(var(--color-primary-100) / <alpha-value>)",
+          200: "rgb(var(--color-primary-200) / <alpha-value>)",
+          300: "rgb(var(--color-primary-300) / <alpha-value>)",
+          400: "rgb(var(--color-primary-400) / <alpha-value>)",
+          500: "rgb(var(--color-primary-500) / <alpha-value>)",
+          600: "rgb(var(--color-primary-600) / <alpha-value>)",
+          700: "rgb(var(--color-primary-700) / <alpha-value>)",
+          800: "rgb(var(--color-primary-800) / <alpha-value>)",
+          900: "rgb(var(--color-primary-900) / <alpha-value>)",
+          950: "rgb(var(--color-primary-950) / <alpha-value>)",
+        },
+        font: {
+          "subtle-light": "rgb(var(--color-font-subtle-light) / <alpha-value>)",
+          "subtle-dark": "rgb(var(--color-font-subtle-dark) / <alpha-value>)",
+          "default-light": "rgb(var(--color-font-default-light) / <alpha-value>)",
+          "default-dark": "rgb(var(--color-font-default-dark) / <alpha-value>)",
+          "important-light": "rgb(var(--color-font-important-light) / <alpha-value>)",
+          "important-dark": "rgb(var(--color-font-important-dark) / <alpha-value>)",
+        }
+      }
+    }
+  }
+};
+Next, create a styles.css file in your project's root directory. This file will be used to compile Tailwind CSS into your project:
+
+/* styles.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Your custom styles */
+.some-class {
+    @apply bg-primary-600;
+}
+Once the configuration file is set up, you can compile the styles which can be loaded into the admin using the STYLES key in the UNFOLD dictionary.
+
+# One-time build with minified output
+npx tailwindcss -i styles.css -o your_project/static/css/styles.css --minify
+
+# Watch for changes and compile automatically with minified output
+npx tailwindcss -i styles.css -o your_project/static/css/styles.css --minify --watch
+You can automate this process by adding the following scripts to your package.json file:
+
+{
+  "scripts": {
+    "tailwind:watch": "npx tailwindcss -i styles.css -o your_project/static/css/styles.css --minify --watch",
+    "tailwind:build": "npx tailwindcss -i styles.css -o your_project/static/css/styles.css --minify"
+  }
+  // rest of configuration
+}
+
+
+Introduction to components
+Unfold provides a set of already predefined templates to speed up overall dashboard development. These templates contain predefined design which matches global design style so there is no need to spend any time adjusting styles.
+
+The biggest benefit of Unfold components is the possibility to nest them inside one template file provides an unlimited amount of possible combinations. Then each component includes children variable which contains a value specified in the parent component. Except for children variable, components can have multiple variables coming from the parent template as component variables. These parameters can be specified in the same as parameters when using {% include with param1=value1 param2=value2 %} template tag.
+
+{% load unfold %}
+
+<div class="flex flex-col">
+    {% component "unfold/components/card.html" %}
+        {% component "unfold/components/title.html" %}
+            Card Title
+        {% endcomponent %}
+    {% endcomponent %}
+</div>
+Below you can find a more complex example which is using multiple components and processing them based on the passed variables from the DASHBOARD_CALLBACK.
+
+{% load i18n unfold %}
+
+{% block content %}
+    {% component "unfold/components/container.html" %}
+        <div class="flex flex-col gap-4">
+            {% component "unfold/components/navigation.html" with items=navigation %}
+            {% endcomponent %}
+
+            {% component "unfold/components/navigation.html" with class="ml-auto" items=filters %}
+            {% endcomponent %}
+        </div>
+
+        <div class="grid grid-cols-3">
+            {% for card in cards %}
+                {% trans "Last 7 days" as label %}
+                {% component "unfold/components/card.html" with class="lg:w-1/3" %}
+                    {% component "unfold/components/text.html" %}
+                        {{ card.title }}
+                    {% endcomponent %}
+
+                    {% component "unfold/components/title.html" %}
+                        {{ card.metric }}
+                    {% endcomponent %}
+                {% endcomponent %}
+            {% endfor %}
+        </div>
+    {% endcomponent %}
+{% endblock %}
+List of available components
+Component	Description	Arguments
+unfold/components/button.html	Basic button element	class, name, href, submit
+unfold/components/card.html	Card component	class, title, footer, label, icon
+unfold/components/chart/bar.html	Bar chart implementation	class, data, height, width
+unfold/components/chart/line.html	Line chart implementation	class, data, height, width
+unfold/components/container.html	Wrapper for settings max width	class
+unfold/components/flex.html	Flex items	class, col
+unfold/components/icon.html	Icon element	class
+unfold/components/navigation.html	List of navigation links	class, items
+unfold/components/progress.html	Percentual progress bar	class, value, title, description
+unfold/components/separator.html	Separator, horizontal rule	class
+unfold/components/table.html	Table	table, card_included, striped
+unfold/components/text.html	Paragraph of text	class
+unfold/components/title.html	Basic heading element	class
+unfold/components/tracker.html	Tracker component	data
+unfold/components/cohort.html	Cohort component	data
+Table component example
+from typing import Dict
+from django.http import HttpRequest
+
+
+def dashboard_callback(request: HttpRequest) -> Dict:
+    return {
+        "table_data": {
+            "headers": ["col 1", "col 2"],
+            "rows": [
+                ["a", "b"],
+                ["c", "d"],
+            ]
+        }
+    }
+{% load unfold %}
+
+{% component "unfold/components/card.html" with title="Card title" %}
+    {% component "unfold/components/table.html" with table=table_data card_included=1 striped=1 %}{% endcomponent %}
+{% endcomponent %}
+
+Component class
+Each component in Unfold theme has a component class that is responsible for preparing the data for the component. The component class is optional and if you don't want to use it, you can pass the data directly to the component in the template.
+
+# admin.py
+
+from unfold.components import BaseComponent
+
+class MyComponent(BaseComponent):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "data": DATA
+        })
+        return context
+You can then use the component class in your template like this:
+
+{% load unfold %}
+
+{% component "unfold/components/my_component.html" with component_class="MyComponent" %}{% endc
+
+
+Cohort component
+The cohort component allows you to display cohort analysis data in a table format. It's useful for analyzing user behavior and retention over time. Unfold provides a default implementation of the cohort component. The only important parameter is the data parameter, which is a dictionary that contains a more complex data structure.
+
+Default cohort component implementation in template
+In template you can use the default implementation of the cohort component by using the following code below. The component_class parameter is the name of the component class that you will create in the next section and it will prepare the data for the cohort component.
+
+{% load unfold %}
+
+{% component "unfold/components/chart/cohort.html" with component_class="MyCohortComponent" %}
+{% endcomponent %}
+If you don't want to use component_class parameter, you can prepare data in the dashboard callback function and use it like this:
+
+{% load unfold %}
+
+{% component "unfold/components/chart/cohort.html" with data=my_data_variable data=my_data %}
+{% endcomponent %}
+Custom cohort data preparation in component class
+Below you can see an example of a component class that prepares the data for the cohort component. The component in template will receive the data parameter that is passed to the get_context_data method.
+
+# admin.py
+
+from unfold.components import BaseComponent
+
+class MyCohortComponent(BaseComponent):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "data": DATA
+        })
+        return context
+Data structure example
+DATA = {
+    "headers": [
+        # Col 1 header
+        {
+            "title": "Title",
+            "subtitle": "something",  # Optional
+        },
+    ],
+    "rows": [
+        # First row
+        {
+            # Row heading
+            "header": {
+                "title": "Title",
+                "subtitle": "something",  # Optional
+            },
+            "cols": [
+                # Col 1 cell value
+                {
+                    "value": "1",
+                    "subtitle": "something",  # Optional
+                }
+            ]
+        },
+        # Second row
+        {
+        "header": {
+            # Row heading
+            "title": "Title",
+                "subtitle": "something",  # Optional
+            },
+            # Col 1 cell value
+            "cols": [
+                {
+                    "value": "1",
+                }
+            ]
+        },
+    ]
+}
+
+Tracker component
+The tracker component is a visual representation of data points. It's useful for displaying activity or progress over time. Each cell in the tracker can be colored differently and can include a tooltip for additional information.
+
+Default tracker component implementation in template
+You can use the default implementation of the tracker component in your template with the following code. Like the cohort component, you can either use a component class to prepare the data or pass the data directly.
+
+Using component class:
+
+{% load unfold %}
+
+{% component "unfold/components/tracker.html" with component_class="MyTrackerComponent" %}
+{% endcomponent %}
+Using data directly:
+
+{% load unfold %}
+
+{% component "unfold/components/tracker.html" with data=my_data_variable %}
+{% endcomponent %}
+Custom tracker data preparation in component class
+Below you can see an example of a component class that prepares the data for the tracker component. The component in template will receive the data parameter that is passed to the get_context_data method.
+
+# admin.py
+
+from unfold.components import BaseComponent
+
+class MyTrackerComponent(BaseComponent):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "data": DATA
+        })
+        return context
+Data structure example
+DATA = [
+    {
+        "color": "bg-primary-400 dark:bg-primary-700",
+        "tooltip": "Custom value 1",
+    },
+    {
+        "color": "bg-primary-400 dark:bg-primary-700",
+        "tooltip": "Custom value 2",
+    }
+]
+
+Admin dashboard
+Create templates/admin/index.html in your project and paste the base template below into it. By default, all your custom styles here are not compiled because CSS classes are located in your specific project. Here it is needed to set up the Tailwind for your project and all required instructions are located in Project Level Tailwind Stylesheet chapter.
+
+Ensure you have set up the template directory in settings.py
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / "templates"],  # Ensure this line is added
+        #....
+    }
+{% extends 'unfold/layouts/base_simple.html' %}
+
+{% load i18n %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}
+    {% if subtitle %}
+        {{ subtitle }} |
+    {% endif %}
+
+    {{ title }} | {{ site_title|default:_('Django site admin') }}
+{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+    Start creating your own Tailwind components here
+{% endblock %}
+Custom variables
+When you are building a new dashboard, you need to display some data mostly coming from the database. To pass these data to the dashboard template, Unfold contains a special DASHBOARD_CALLBACK parameter which allows passing a dictionary of variables to templates/admin/index.html template.
+
+# views.py
+
+def dashboard_callback(request, context):
+    context.update({
+        "custom_variable": "value",
+    })
+
+    return context
+# settings.py
+
+UNFOLD = {
+    "DASHBOARD_CALLBACK": "app.views.dashboard_callback",
+}
+
+Custom pages
+By default, Unfold provides a basic view mixin which helps with creation of basic views which are part of Unfold UI. The implementation requires creation of class based view inheriting from unfold.views.UnfoldModelAdminViewMixin. It is important to add title and permission_required properties.
+
+# admin.py
+
+from django.urls import path
+from django.views.generic import TemplateView
+
+from unfold.admin import ModelAdmin
+from unfold.views import UnfoldModelAdminViewMixin
+
+from .models import MyModel
+
+
+class MyClassBasedView(UnfoldModelAdminViewMixin, TemplateView):
+    title = "Custom Title"  # required: custom page header title
+    permission_required = () # required: tuple of permissions
+    template_name = "some/template/path.html"
+
+
+@admin.register(MyModel)
+class CustomAdmin(ModelAdmin):
+    def get_urls(self):
+        # IMPORTANT: model_admin is required
+        custom_view = self.admin_site.admin_view(
+            MyClassBasedView.as_view(model_admin=self)
+        )
+
+        return super().get_urls() + [
+            path(
+                "custom-url-path", custom_view, name="custom_name"
+            ),
+        ]
+The template is straightforward, extend from unfold/layouts/base.html and the UI will display all Unfold components like header or sidebar with all menu items. Then all content needs to be located in content block. Below you can find full example from the Formula project implementing additional components:
+
+Breadcrumbs: it is up to developer to construct own breadcrumbs
+Tab list: in case your project has dynamic tabs, you can use tab_list helper to display them
+{% extends "unfold/layouts/base.html" %}
+
+{% load admin_urls i18n unfold %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+    <div class="px-4 lg:px-8">
+        <div class="container mb-6 mx-auto -my-3 lg:mb-12">
+            <ul class="flex flex-wrap">
+                {% url 'admin:index' as link %}
+                {% trans 'Home' as name %}
+                {% include 'unfold/helpers/breadcrumb_item.html' with link=link name=name %}
+
+                {% url 'admin:formula_driver_changelist' as link %}
+                {% trans 'Drivers' as name %}
+                {% include 'unfold/helpers/breadcrumb_item.html' with link=link name=name %}
+
+                {% trans 'Custom page' as name %}
+                {% include 'unfold/helpers/breadcrumb_item.html' with name=name %}
+            </ul>
+        </div>
+    </div>
+{% endif %}{% endblock %}
+
+{% block content %}
+    {% tab_list "drivers" %}
+
+    {% trans "Custom page" %}
+{% endblock %}
+Note: custom view is not by default added into sidebar navigation. It has to be added manually into sidebar in UNFOLD settings.
+
+Custom sites
+In order to create a custom admin site, Unfold provides the unfold.sites.UnfoldAdminSite class which can be used as follows:
+
+# sites.py
+
+from django.contrib import admin
+from unfold.sites import UnfoldAdminSite
+
+class CustomAdminSite(UnfoldAdminSite):
+    pass
+
+
+custom_admin_site = CustomAdminSite(name="custom_admin_site")
+# urls.py
+
+from django.urls import path
+from .sites import custom_admin_site
+
+
+urlpatterns = [
+    # other URL patterns
+    path("admin/", custom_admin_site.urls),
+]
+# models.py
+
+from django.contrib.auth.models import User
+from unfold.admin import ModelAdmin
+
+
+@admin.register(User, site=custom_admin_site)
+class UserAdmin(ModelAdmin):
+    model = User
+Note: If you use the default django.contrib.admin.AdminSite you will receive a NoReverseMatch error because the default admin site does not contain all URL patterns required by Unfold.
+
+Overriding the default admin site
+If you want to override the default admin site by setting the default_site attribute of a custom django.contrib.admin.apps.AdminConfig class, you must install Unfold using unfold.apps.AppConfig instead of just unfold in INSTALLED_APPS.
+
+# settings.py
+
+INSTALLED_APPS = [
+    "unfold.apps.BasicAppConfig", # App config not overriding `django.contrib.admin.site`
+    # some other apps
+    "django.contrib.admin",
+    "your_app",
+]
+# apps.py
+
+from django.contrib.admin.apps import AdminConfig
+
+
+class MyAdminConfig(AdminConfig):
+    default_site = "myproject.sites.CustomAdminSite"
+
+Multi-language support
+To add support for multiple languages in django admin, you need to add django.middleware.locale.LocaleMiddleware to MIDDLEWARE and set USE_I18N to True. Then you need to define LANGUAGE_CODE and LANGUAGES. After these changes your site will be prepared for multiple languages.
+
+# settings.py
+
+MIDDLEWARE = [
+    "django.middleware.locale.LocaleMiddleware",
+]
+
+LANGUAGE_CODE = "en"
+
+USE_I18N = True
+
+LANGUAGES = (
+    ("de", _("German")),
+    ("en", _("English")),
+)
+Below you can find an example of how to add support for multiple languages in Django admin. Once you have this setup, you will be able to access the admin in different languages. In our case we have two languages, English and German so our admin will be available in /en/admin/ and /de/admin/. If you visit /admin/ you will see the default language which is English and you will be redirected to /en/admin/.
+
+The path("i18n/", include("django.conf.urls.i18n")), is needed for the language selector to work. This line of code is going to provide a view which will be used to change the language. Make sure that this line is not defined in i18n_patterns.
+
+# urls.py
+
+from django.conf.urls.i18n import i18n_patterns
+from django.urls import include, path
+
+urlpatterns = (
+    [
+        path("i18n/", include("django.conf.urls.i18n")),
+    ]
+    + i18n_patterns(
+        path("admin/", admin.site.urls),
+    )
+)
+To display the language selector in the admin, you need to add UNFOLD = {"SHOW_LANGUAGES": True,} to your settings.py file. The language selector will be displayed in the top right corner of the admin.
+
+# settings.py
+
+UNFOLD = {
+    "SHOW_LANGUAGES": True,
+}
+
+# integrations
+
+django-simple-history
+To make this application work, add unfold.contrib.simple_history to the INSTALLED_APPS variable in settings.py, placing it after unfold but before simple_history. This app ensures that templates from django-simple-history are overridden by Unfold.
+
+# settings.py
+
+INSTALLED_APPS = [
+    "unfold",
+    # ...
+    "unfold.contrib.simple_history",
+    # ...
+    "simple_history",
+]
+Below you can find an example of how to use Unfold with django-simple-history. The important part is to inherit from SimpleHistoryAdmin and unfold.adminModelAdmin.
+
+# admin.py
+
+from django.contrib import admin
+from django.contrib.auth import get_user_model
+
+from simple_history.admin import SimpleHistoryAdmin
+from unfold.admin import ModelAdmin
+
+User = get_user_model()
+
+
+@admin.register(User)
+class UserAdmin(SimpleHistoryAdmin, ModelAdmin):
+    pass
+
+
+django-money
+This application is supported in Unfold by default. It is not needed to add any other applications into INSTALLED_APPS. Unfold is recognizing special form widget coming from django-money and applying specific styling.
+
+
+django-import-export
+Add unfold.contrib.import_export to INSTALLED_APPS at the beginning of the file. This action will override all templates coming from the application.
+Change import_form_class and export_form_class in ModelAdmin which is inheriting from ImportExportModelAdmin. This chunk of code is responsible for adding proper styling to form elements.
+# admin.py
+
+from unfold.admin import ModelAdmin
+from import_export.admin import ImportExportModelAdmin
+from unfold.contrib.import_export.forms import ExportForm, ImportForm, SelectableFieldsExportForm
+
+class ExampleAdmin(ModelAdmin, ImportExportModelAdmin):
+    import_form_class = ImportForm
+    export_form_class = ExportForm
+    # export_form_class = SelectableFieldsExportForm
+When implementing import_export.admin.ExportActionModelAdmin class in admin panel, import_export plugin adds its own implementation of action form which is not incorporating Unfold CSS classes. For this reason, unfold.contrib.import_export.admin contains class with the same name ExportActionModelAdmin which inherits behavior of parent form and adds appropriate CSS classes.
+
+Note: This class has been removed and in new version (4.x) of django-import-export it is not needed.
+
+admin.py
+
+from unfold.admin import ModelAdmin
+from unfold.contrib.import_export.admin import ExportActionModelAdmin
+
+class ExampleAdmin(ModelAdmin, ExportActionModelAdmin):
+    pass
+
+django-celery-beat
+In general, django-celery-beat does not have any components that require special styling. The default changelist templates are not inheriting from Unfold's ModelAdmin but they are using default ModelAdmin coming from django.contrib.admin which is causing some design discrepancies in the changelist.
+
+In the source code below you can find a short code snippet to unregister all django-celery-beat admin classes and register them with the proper parent ModelAdmin class.
+
+# admin.py
+from django.contrib import admin
+from unfold.admin import ModelAdmin
+
+from django_celery_beat.models import (
+    ClockedSchedule,
+    CrontabSchedule,
+    IntervalSchedule,
+    PeriodicTask,
+    SolarSchedule,
+)
+from django_celery_beat.admin import ClockedScheduleAdmin as BaseClockedScheduleAdmin
+from django_celery_beat.admin import CrontabScheduleAdmin as BaseCrontabScheduleAdmin
+from django_celery_beat.admin import PeriodicTaskAdmin as BasePeriodicTaskAdmin
+from django_celery_beat.admin import PeriodicTaskForm, TaskSelectWidget
+
+admin.site.unregister(PeriodicTask)
+admin.site.unregister(IntervalSchedule)
+admin.site.unregister(CrontabSchedule)
+admin.site.unregister(SolarSchedule)
+admin.site.unregister(ClockedSchedule)
+
+
+class UnfoldTaskSelectWidget(UnfoldAdminSelectWidget, TaskSelectWidget):
+    pass
+
+
+class UnfoldPeriodicTaskForm(PeriodicTaskForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["task"].widget = UnfoldAdminTextInputWidget()
+        self.fields["regtask"].widget = UnfoldTaskSelectWidget()
+
+
+@admin.register(PeriodicTask)
+class PeriodicTaskAdmin(BasePeriodicTaskAdmin, ModelAdmin):
+    form = UnfoldPeriodicTaskForm
+
+
+@admin.register(IntervalSchedule)
+class IntervalScheduleAdmin(ModelAdmin):
+    pass
+
+
+@admin.register(CrontabSchedule)
+class CrontabScheduleAdmin(BaseCrontabScheduleAdmin, ModelAdmin):
+    pass
+
+
+@admin.register(SolarSchedule)
+class SolarScheduleAdmin(ModelAdmin):
+    pass
+
+@admin.register(ClockedSchedule)
+class ClockedScheduleAdmin(BaseClockedScheduleAdmin, ModelAdmin):
+    pass
+
+django-guardian
+Adding support for django-guardian is quite straightforward in Unfold, just add unfold.contrib.guardian to INSTALLED_APPS at the beginning of the file. This action will override all templates coming from the django-guardian. Please note that Object permissions link is available in top right dropdown navigation.
+
+django-modeltranslation
+By default, Unfold supports django-modeltranslation and TabbedTranslationAdmin admin class for the tabbed navigation is implemented with custom styling as well.
+
+from django.contrib import admin
+
+from modeltranslation.admin import TabbedTranslationAdmin
+from unfold.admin import ModelAdmin
+
+from .models import MyModel
+
+
+@admin.register(MyModel)
+class MyModelAdmin(ModelAdmin, TabbedTranslationAdmin):
+    pass
+For django-modeltranslation fields for spefic languages, it is possible to define custom flags which will appear as a suffix in field's label. It is recommended to use emojis as suffix.
+
+# settings.py
+
+UNFOLD = {
+    "EXTENSIONS": {
+        "modeltranslation": {
+            "flags": {
+                "en": "🇬🇧",
+                "fr": "🇫🇷",
+                "nl": "🇧🇪",
+            },
+        },
+    },
+}

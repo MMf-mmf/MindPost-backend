@@ -1,0 +1,5 @@
+-r base.txt # includes the base.txt requirements file
+
+# django_browser_reload # for auto-reloading when files change
+django-debug-toolbar # for debugging
+# faker

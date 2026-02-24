@@ -1,0 +1,16 @@
+{% extends "base/home.html" %}
+
+{# This template now simply extends the main base template #}
+{# to ensure consistent header, footer, and styling. #}
+
+{# The title block can be overridden by specific auth pages (login.html, signup.html) #}
+{% block title %}{{ block.super }} - Authentication{% endblock %}
+
+{# The content block will be filled by the specific auth pages #}
+{# and inserted into the <main> section of base/home.html #}
+{% block content %}
+    {# Specific authentication page content (login form, signup form) goes here #}
+{% endblock %}
+
+{# No need for extra_css or extra_js blocks unless specifically required #}
+{# by an auth page, as base/home.html handles the main includes. #}

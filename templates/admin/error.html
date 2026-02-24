@@ -1,0 +1,35 @@
+{% extends "unfold/layouts/base.html" %}
+
+{% load i18n admin_urls unfold %}
+
+{% block title %}{% trans 'Error' %}{% endblock %}
+
+{% block content %}
+    {% component "unfold/components/container.html" %}
+        {% component "unfold/components/flex.html" with col=True class="items-center justify-center min-h-[60vh] text-center" %}
+            {% component "unfold/components/icon.html" with size="xxl" class="text-warning-600 mb-4" %}
+                warning_amber
+            {% endcomponent %}
+            
+            {% component "unfold/components/title.html" with class="mb-2" %}
+                {% if error_title %}
+                    {{ error_title }}
+                {% else %}
+                    {% trans 'Error' %}
+                {% endif %}
+            {% endcomponent %}
+            
+            {% component "unfold/components/text.html" with class="text-base-500 mb-6" %}
+                {% if error_message %}
+                    {{ error_message }}
+                {% else %}
+                    {% trans "An error occurred while processing your request." %}
+                {% endif %}
+            {% endcomponent %}
+            
+            {% component "unfold/components/button.html" with href="admin:index" variant="primary" %}
+                {% trans 'Return to Dashboard' %}
+            {% endcomponent %}
+        {% endcomponent %}
+    {% endcomponent %}
+{% endblock %}

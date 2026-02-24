@@ -1,0 +1,341 @@
+{% extends "base/home.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl"> {# Added max-w-4xl for consistency #}
+    <div class="mb-8"> {# Increased margin #}
+        {# Consistent link style - Increased size #}
+        <a href="{% url 'posts' %}" class="inline-flex items-center gap-x-1.5 text-base font-semibold text-indigo-600 hover:text-indigo-500"> {# Increased text size #}
+            <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+            </svg>
+            Back to posts
+        </a>
+    </div>
+
+    <!-- Post details card -->
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden ring-1 ring-black/5"> {# Added ring for consistency #}
+        <!-- Post header -->
+        <div class="bg-gray-50 p-5 sm:px-6 border-b border-gray-200"> {# Increased padding #}
+            <div class="flex flex-wrap justify-between items-center gap-y-3"> {# Increased gap #}
+                <div>
+                    <h1 class="text-lg font-semibold text-gray-900">Post Details</h1> {# Increased text size #}
+                    <p class="text-base text-gray-500 mt-1"> {# Increased text size #}
+                        Created: {{ post.created_at|date:"M d, Y • g:i A" }} {# Consistent date format #}
+                        {% if post.modified_at != post.created_at %}
+                            • Updated: {{ post.modified_at|date:"M d, Y • g:i A" }}
+                        {% endif %}
+                    </p>
+                    
+                    <!-- Original recording link -->
+                    {% comment %} 
+                        {% if post.brain_dumps.all %}
+                            <p class="mt-2">
+                                <a href="{% url 'brain_dump_detail' post.brain_dumps.first.id %}" class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-800">
+                                    <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
+                                    </svg>
+                                    View original recording
+                                </a>
+                            </p>
+                        {% endif %}
+                    {% endcomment %}
+                </div>
+                {# Removed old badge section, consolidated below #}
+                <div class="flex space-x-2.5"> {# Increased spacing #} {# Use consistent badge style - Increased size #}
+                    {% if post.status == "posted" %}
+                        <span class="inline-flex items-center rounded-md bg-blue-50 px-2.5 py-1.5 text-sm font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20"> {# Increased padding and text size #}
+                            Published
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center rounded-md bg-gray-50 px-2.5 py-1.5 text-sm font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"> {# Increased padding and text size #}
+                            Draft
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Post content or edit form -->
+        <div id="content-display" class="p-8"> {# Increased padding #}
+            {# Apply prose for typography - Increased size #}
+            <div class="prose prose-base max-w-none"> {# Increased prose size #}
+                <p class="whitespace-pre-wrap">{{ post.content }}</p>
+            </div>
+
+            <!-- Display existing images -->
+            {% if post.images.all %}
+                <div class="mt-6"> {# Increased margin #}
+                    <h3 class="text-base font-medium text-gray-700 mb-3">Attached Images:</h3> {# Increased text size and margin #}
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5"> {# Increased gap #}
+                        {% for image in post.images.all %}
+                            <div class="relative group">
+                                <img src="{{ image.image.url }}" alt="Post image {{ forloop.counter }}" class="rounded-lg object-cover aspect-square">
+                                <!-- Optional: Add delete button for existing images if needed -->
+                                {# <button type="button" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">X</button> #}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Edit form (initially hidden) -->
+        <div id="edit-form-container" class="p-8 hidden"> {# Increased padding #}
+            <form id="edit-form" method="post" action="{% url 'save_post' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="post_id" value="{{ post.id }}">
+                <input type="hidden" name="action" value="draft">
+                <div class="mb-6"> {# Increased margin #}
+                    <label for="content" class="block text-base font-medium text-gray-900 mb-1.5">Content</label> {# Increased text size and margin #}
+                    {# Consistent textarea style - Increased size #}
+                    <textarea
+                        name="content"
+                        id="content"
+                        rows="8" {# Increased rows #}
+                        {# Consistent textarea style with ring #}
+                        class="block w-full rounded-md bg-white px-4 py-2 text-base text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600" {# Increased padding and text size #}
+                    >{{ post.content }}</textarea>
+                </div>
+
+                <!-- Image Upload Section -->
+                <div class="mb-6"> {# Increased margin #}
+                    <label for="images" class="block text-base font-medium text-gray-900 mb-1.5">Upload Images</label> {# Increased text size and margin #}
+                    <input type="file" name="images" id="images" multiple accept="image/*"
+                           class="block w-full text-base text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-md file:border-0 file:text-base file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"> {# Increased text size and padding #}
+                    <div id="image-preview-container" class="mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5"> {# Increased margin and gap #}
+                        <!-- Image previews will be inserted here by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3"> {# Increased spacing #}
+                    {# Consistent Cancel button (secondary style) - Increased size #}
+                    <button type="button" onclick="toggleEditMode(false); clearImagePreviews();" class="inline-flex items-center gap-x-2 rounded-md bg-white px-4 py-2.5 text-base font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50"> {# Increased padding, text size, gap #}
+                        Cancel
+                    </button>
+                    {# Consistent Save button (primary style) - Increased size #}
+                    <button type="submit" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"> {# Increased padding, text size, gap #}
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Twitter info if post is published -->
+        {% if post.post_id and post.status == "posted" %}
+        <div class="bg-gray-50 p-8 border-t border-gray-200"> {# Increased padding #}
+            <div class="flex items-start">
+                <svg class="h-6 w-6 text-blue-500 mr-3 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                </svg>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">Published on Twitter/X</h3> {# Increased text size #}
+                    <p class="text-base text-gray-500 mb-2.5">Tweet ID: {{ post.post_id }}</p> {# Increased text size and margin #}
+                    {% if post.post_url %}
+                        {# Consistent link style - Increased size #}
+                        <a href="{{ post.post_url }}" target="_blank" class="inline-flex items-center text-base font-semibold text-indigo-600 hover:text-indigo-500"> {# Increased text size #}
+                            View on Twitter
+                            <svg class="h-5 w-5 ml-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"> {# Increased size and margin #}
+                                <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                            </svg>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Post actions -->
+        <div class="bg-gray-50 px-8 py-5 flex flex-wrap justify-between items-center border-t border-gray-200 gap-3"> {# Increased padding and gap #}
+            <div class="flex space-x-3"> {# Increased spacing #}
+                {% if post.status == "draft" %}
+                    <!-- Edit button for drafts - Primary Style - Increased size -->
+                    <button
+                        onclick="toggleEditMode(true)"
+                        class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" {# Increased padding, text size, gap #}
+                    >
+                        <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                        Edit
+                    </button>
+
+                    <!-- Publish button for drafts - Secondary Style (blue) - Increased size -->
+                    <form method="post" action="{% url 'save_post' %}" class="inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <input type="hidden" name="content" value="{{ post.content }}">
+                        <input type="hidden" name="action" value="publish">
+                        <button type="submit" class="inline-flex items-center gap-x-2 rounded-md bg-blue-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"> {# Increased padding, text size, gap #}
+                            <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                            </svg>
+                            Publish to Twitter
+                        </button>
+                    </form>
+                {% else %}
+                    <!-- Disabled edit button - Increased size -->
+                    <div class="group relative">
+                        <button
+                            disabled
+                            class="inline-flex items-center gap-x-2 rounded-md bg-gray-300 px-4 py-2.5 text-base font-semibold text-gray-500 shadow-xs cursor-not-allowed" {# Increased padding, text size, gap #}
+                        >
+                            <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            Edit
+                        </button>
+                        <div class="absolute bottom-full left-0 mb-2 w-48 bg-gray-800 text-white text-sm rounded py-1.5 px-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"> {# Increased text size and padding #}
+                            Published posts cannot be edited
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="flex space-x-3"> {# Increased spacing #}
+                {# Delete Button - Red Style - Increased size #}
+                <form method="post" action="{% url 'save_post' %}" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    <input type="hidden" name="content" value="{{ post.content }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="inline-flex items-center gap-x-2 rounded-md bg-red-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600" onclick="return confirm('Are you sure you want to delete this post?')"> {# Increased padding, text size, gap #}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                    </svg>
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Associated brain dumps (if any) -->
+        {% if post.brain_dumps.all %}
+        <div class="p-8 mt-8 border-t border-gray-200"> {# Increased padding and margin #}
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Associated Brain Dumps</h2> {# Increased text size and margin #}
+            <ul class="divide-y divide-gray-200 border border-gray-200 rounded-md">
+                {% for dump in post.brain_dumps.all %}
+                    <li class="px-5 py-4 hover:bg-gray-50"> {# Increased padding #}
+                        <a href="{% url 'brain_dump_detail' dump.id %}" class="block">
+                            <div class="flex justify-between items-center">
+                                <div class="flex-1 min-w-0"> {# Added min-w-0 for truncation #}
+                                    <p class="text-base font-medium text-gray-900 truncate"> {# Increased text size #}
+                                        {% if dump.transcription %}
+                                            {{ dump.transcription|slice:":80" }}{% if dump.transcription|length > 80 %}...{% endif %} {# Increased slice #}
+                                        {% else %}
+                                            Recording #{{ dump.id }}
+                                        {% endif %}
+                                    </p>
+                                    <p class="text-base text-gray-500">{{ dump.created_at|date:"M j, Y • g:i A" }}</p> {# Increased text size #}
+                                </div>
+                                <svg class="h-5 w-5 text-gray-400 ml-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"> {# Increased margin #}
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function toggleEditMode(showEdit) {
+        const contentDisplay = document.getElementById('content-display');
+        const editFormContainer = document.getElementById('edit-form-container');
+        
+        if (showEdit) {
+            contentDisplay.classList.add('hidden');
+            editFormContainer.classList.remove('hidden');
+        } else {
+            contentDisplay.classList.remove('hidden');
+            editFormContainer.classList.add('hidden');
+            clearImagePreviews(); // Clear previews when cancelling edit mode
+        }
+    }
+
+    // Image Preview Handling
+    const imageInput = document.getElementById('images');
+    const previewContainer = document.getElementById('image-preview-container');
+
+    if (imageInput) {
+        imageInput.addEventListener('change', handleImageFiles);
+    }
+
+    function handleImageFiles() {
+        clearImagePreviews(); // Clear existing previews first
+        const files = imageInput.files;
+
+        if (files.length > 0) {
+            previewContainer.classList.remove('hidden'); // Show container if hidden
+        } else {
+            previewContainer.classList.add('hidden'); // Hide if no files selected
+            return;
+        }
+
+        for (const file of files) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = e.target.result;
+                    imgElement.alt = `Preview of ${file.name}`;
+                    imgElement.classList.add('rounded-lg', 'object-cover', 'aspect-square'); // Style the preview image
+
+                    const previewWrapper = document.createElement('div');
+                    previewWrapper.classList.add('relative'); // For potential future additions like remove buttons
+                    previewWrapper.appendChild(imgElement);
+
+                    previewContainer.appendChild(previewWrapper);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    }
+
+    function clearImagePreviews() {
+        if (previewContainer) {
+            previewContainer.innerHTML = ''; // Remove all child elements (previews)
+            previewContainer.classList.add('hidden'); // Hide the container
+        }
+        // Reset the file input value if needed, though this can be tricky across browsers
+        // imageInput.value = ''; // Uncomment if you want to clear the selection itself
+    }
+
+    // Initial setup: Ensure preview container is hidden if it exists
+    if (previewContainer) {
+        previewContainer.classList.add('hidden');
+    }
+
+    // Add character counter to edit form
+    document.addEventListener('DOMContentLoaded', function() {
+        const contentTextarea = document.getElementById('content');
+        if (contentTextarea) {
+            // Create character counter element
+            const charCounter = document.createElement('div');
+            charCounter.className = 'text-xs text-gray-500 mt-1';
+            charCounter.id = 'char-counter';
+            contentTextarea.parentNode.appendChild(charCounter);
+            
+            // Update character count function
+            const updateCharCount = function() {
+                const count = contentTextarea.value.length;
+                const limit = 5000;
+                charCounter.textContent = `${count}/${limit} characters`;
+                
+                if (count > limit) {
+                    charCounter.classList.add('text-red-500', 'font-bold');
+                } else {
+                    charCounter.classList.remove('text-red-500', 'font-bold');
+                }
+            };
+            
+            // Add event listener and initial count
+            contentTextarea.addEventListener('input', updateCharCount);
+            updateCharCount();
+        }
+    });
+</script>
+{% endblock %}

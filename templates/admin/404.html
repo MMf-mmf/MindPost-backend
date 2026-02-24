@@ -1,0 +1,28 @@
+{% extends "unfold/layouts/base.html" %}
+
+{% load i18n admin_urls unfold %}
+
+{% block title %}{% trans 'Page Not Found (404)' %}{% endblock %}
+
+{% block content %}
+    {% component "unfold/components/container.html" %}
+        {% component "unfold/components/flex.html" with col=True class="items-center justify-center min-h-[60vh] text-center" %}
+            {% component "unfold/components/icon.html" with size="xxl" class="text-warning-500 mb-4" %}
+                search_off
+            {% endcomponent %}
+            
+            {% component "unfold/components/title.html" with class="mb-2" %}
+                {% trans 'Page Not Found' %}
+            {% endcomponent %}
+            
+            {% component "unfold/components/text.html" with class="text-base-500 mb-6" %}
+                {% trans "We couldn't find the page you're looking for." %}
+            {% endcomponent %}
+            
+            {% url 'admin:index' as index_url %}
+            <a href="{{ index_url }}" class="inline-block bg-blue-600 hover:bg-blue-700 font-medium px-4 py-2 rounded">
+                {% trans 'Return to Dashboard' %}
+            </a>
+        {% endcomponent %}
+    {% endcomponent %}
+{% endblock %}

@@ -1,0 +1,45 @@
+# ignore uncoiled Python files
+*.pyc
+# ignore sqlite
+db.sqlite3
+# ignore node modules
+node_modules
+# ignore python virtual environment
+venv
+# ignore .env file
+.env
+.env.prod
+.env.staging
+# ignore the staticfiles directory
+staticfiles
+# ignore the shell_dumps which is old shell scripts that are not used
+shell_dumps.txt
+
+# GCP service account credentials
+creds.json
+
+# SSL certificates
+ssl/
+
+# Redis cache dump
+*.rdb
+data/
+
+# User uploaded media files
+media/
+
+# Jupyter notebooks
+*.ipynb
+
+# macOS system files
+.DS_Store
+
+# Python cache
+__pycache__/
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+env/
+ENV/

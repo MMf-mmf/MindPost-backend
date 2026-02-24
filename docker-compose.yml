@@ -1,0 +1,43 @@
+services:
+  web:
+    build: .
+    container_name: brain_dumps
+    command: >
+      bash -c "
+        ./wait-for-it.sh cloudsqlproxy:5432 --timeout=30 -- python manage.py migrate &&
+        gunicorn --bind 0.0.0.0:8000 --workers 1 --threads 8 --timeout 0 project.wsgi:application"
+    volumes:
+      - .:/code
+      - ./creds.json:/secrets/creds.json
+    env_file:
+      - ./.env
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=project.settings.staging
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/creds.json
+      - USE_CLOUD_SQL_AUTH_PROXY=True
+    depends_on:
+      - cloudsqlproxy
+      # - cache
+    restart: on-failure
+
+  # cache:
+  #   image: redis:7.2.4
+  #   restart: on-failure
+  #   volumes:
+  #     - ./data/cache:/data
+
+  cloudsqlproxy:
+    container_name: cloudsql-proxy
+    image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.15.1
+    volumes:
+      - ./creds.json:/config/creds.json
+    ports:
+      - "127.0.0.1:5432:5432"
+    command: >
+      --address 0.0.0.0
+      --credentials-file /config/creds.json
+      --auto-iam-authn
+      <your-gcp-project-id>:<your-region>:<your-cloud-sql-instance>
+    restart: on-failure

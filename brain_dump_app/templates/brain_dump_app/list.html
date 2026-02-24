@@ -1,0 +1,318 @@
+{% extends "base/home.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl"> {# Added container, mx-auto, max-w-4xl #}
+    <div class="sm:flex sm:items-center mb-8"> {# Increased margin #}
+        <div class="sm:flex-auto">
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-3xl">My Brain Dumps</h1> {# Increased base text size #}
+            <p class="mt-2 text-base text-gray-700">A list of all your recorded brain dumps.</p> {# Increased text size #}
+        </div>
+        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            {# Consistent primary button style - Increased size #}
+            <a href="{% url 'brain_dump' %}" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"> {# Increased padding, text size, gap #}
+                 <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                     <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z" clip-rule="evenodd" />
+                </svg>
+                Record New
+            </a>
+        </div>
+    </div>
+
+    <!-- Pagination Info & Controls -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"> {# Increased margin #}
+        {# Items per page selector - styled consistently - Increased size #}
+        <div class="flex items-center">
+                    <label for="items_per_page" class="whitespace-nowrap mr-2 text-base text-gray-600">Items per page:</label> {# Increased text size #}
+                    <select id="items_per_page" class="block rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-base sm:leading-6" onchange="changeItemsPerPage(this.value)"> {# Increased padding and text size #}
+                        <option class="w-10" value="10" {% if request.GET.per_page == '10' or not request.GET.per_page %}selected{% endif %}>10</option>
+                        <option class="w-10" value="20" {% if request.GET.per_page == '20' %}selected{% endif %}>20</option>
+                        <option class="w-10" value="30" {% if request.GET.per_page == '30' %}selected{% endif %}>30</option>
+                        <option class="w-10" value="50" {% if request.GET.per_page == '50' %}selected{% endif %}>50</option>
+                    </select>
+                </div>
+        {# Pagination Info - styled like pagination.html - Increased text size #}
+        <div class="text-base text-gray-700"> {# Increased text size #}
+            {% if page_obj.paginator.count %}
+                Showing
+                <span class="font-medium">{{ page_obj.start_index }}</span>
+                to
+                <span class="font-medium">{{ page_obj.end_index }}</span>
+                of
+                <span class="font-medium">{{ page_obj.paginator.count }}</span>
+                results
+            {% endif %}
+        </div>
+    </div>
+
+
+    <!-- Multi-select actions bar - styled consistently - Increased size #}
+    <div id="selection-actions" class="hidden mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200 flex justify-between items-center"> {# Increased margin and padding #}
+        <div class="flex items-center">
+            <span id="selection-count" class="font-medium text-base text-indigo-800">0 items selected</span> {# Increased text size #}
+            <button id="clear-selection" class="ml-4 text-base font-semibold text-indigo-600 hover:text-indigo-500"> {# Increased margin and text size #}
+                Clear selection
+            </button>
+        </div>
+        {# Button styled like primary buttons - Increased size #}
+        <button id="create-post-btn" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-3 py-2 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"> {# Increased padding, text size, gap #}
+            <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+            </svg>
+            Create Post
+        </button>
+    </div>
+
+    <!-- Form for submitting selected brain dump IDs (no style changes needed) -->
+    <form id="create-post-form" method="POST" action="{% url 'create_post' %}" class="hidden">
+        {% csrf_token %}
+        <input type="hidden" id="selected-ids" name="selected_ids" value="">
+    </form>
+
+    {# Table Layout based on docs/tailwind_templates_docs/table.html #}
+    <div class="mt-8 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                {# Removed relative class, added shadow and ring like table.html #}
+                <div class="overflow-hidden shadow-sm ring-1 ring-black/5 sm:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="relative py-3.5 pr-3 pl-4 sm:pl-6"> {# Adjusted padding #}
+                                    {# Checkbox column - keep for functionality #}
+                                    <span class="sr-only">Select</span>
+                                </th>
+                                <th scope="col" class="py-3.5 pr-3 pl-4 text-left text-base font-semibold text-gray-900 sm:pl-6">Snippet</th> {# Increased text size #}
+                                <th scope="col" class="px-3 py-3.5 text-left text-base font-semibold text-gray-900">Created</th> {# Increased text size #}
+                                <th scope="col" class="px-3 py-3.5 text-left text-base font-semibold text-gray-900">Status</th> {# Increased text size #}
+                                <th scope="col" class="relative py-3.5 pr-4 pl-3 sm:pr-6">
+                                    <span class="sr-only">View</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            {% if page_obj %}
+                                {% for dump in page_obj %}
+                                    <tr>
+                                        <td class="relative py-4 pr-3 pl-4 sm:pl-6"> {# Adjusted padding #}
+                                            <div class="absolute left-4 top-1/2 -mt-2 sm:left-6"> {# Adjusted positioning #}
+                                                <input type="checkbox"
+                                                       id="dump-{{ dump.id }}"
+                                                       value="{{ dump.id }}"
+                                                       class="dump-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"> {# Increased size #}
+                                            </div>
+                                        </td>
+                                        {# Adjusted padding and whitespace for table cells - Increased text size #}
+                                        <td class="py-4 pr-3 pl-4 text-base font-medium whitespace-nowrap text-gray-900 sm:pl-6"> {# Increased text size #}
+                                            <a href="{% url 'brain_dump_detail' dump.id %}" class="hover:text-indigo-500"> {# Consistent hover color #}
+                                                {% if dump.transcription|slice:":50" %}
+                                                    {{ dump.transcription|slice:":50" }}{% if dump.transcription|length > 50 %}...{% endif %}
+                                                {% else %}
+                                                    Recording #{{ dump.id }}
+                                                {% endif %}
+                                            </a>
+                                        </td>
+                                        <td class="px-3 py-4 text-base whitespace-nowrap text-gray-500">{{ dump.created_at|date:"M j, Y, g:i A" }}</td> {# Increased text size #}
+                                        <td class="px-3 py-4 text-base whitespace-nowrap text-gray-500"> {# Increased text size #}
+                                            {# Status badges - Increased size #}
+                                            {% if dump.edited %}
+                                                <span class="inline-flex items-center rounded-md bg-blue-50 px-2.5 py-1.5 text-sm font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20"> {# Increased padding and text size #}
+                                                    Edited
+                                                </span>
+                                            {% elif dump.transcription %}
+                                                <span class="inline-flex items-center rounded-md bg-green-50 px-2.5 py-1.5 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-600/20"> {# Increased padding and text size #}
+                                                    Transcribed
+                                                </span>
+                                            {% else %}
+                                                <span class="inline-flex items-center rounded-md bg-yellow-50 px-2.5 py-1.5 text-sm font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20"> {# Increased padding and text size #}
+                                                    Processing
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="relative py-4 pr-4 pl-3 text-right text-base font-medium whitespace-nowrap sm:pr-6"> {# Increased text size #}
+                                            <a href="{% url 'brain_dump_detail' dump.id %}" class="text-indigo-600 hover:text-indigo-500">View<span class="sr-only">, Recording #{{ dump.id }}</span></a> {# Consistent link style #}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    {# Adjusted colspan to 5 #}
+                                    <td colspan="5" class="py-10 px-3 text-center text-base text-gray-500 whitespace-nowrap"> {# Increased text size #}
+                                        No recordings yet. Click "Record New" to get started!
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination - Replaced with pagination.html structure - Increased size -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-4 sm:px-6 mt-8"> {# Increased padding and margin #}
+        {# Mobile Pagination (hidden on sm and up) - Increased size #}
+        <div class="flex flex-1 justify-between sm:hidden">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-5 py-2.5 text-base font-medium text-gray-700 hover:bg-gray-50">Previous</a> {# Increased padding and text size #}
+            {% else %}
+                 <span class="relative inline-flex items-center rounded-md border border-gray-300 bg-gray-100 px-5 py-2.5 text-base font-medium text-gray-400 cursor-not-allowed">Previous</span> {# Increased padding and text size #}
+            {% endif %}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-5 py-2.5 text-base font-medium text-gray-700 hover:bg-gray-50">Next</a> {# Increased padding and text size #}
+            {% else %}
+                 <span class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-gray-100 px-5 py-2.5 text-base font-medium text-gray-400 cursor-not-allowed">Next</span> {# Increased padding and text size #}
+            {% endif %}
+        </div>
+        {# Desktop Pagination (hidden below sm) - Increased size #}
+        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            {# Pagination Info (already displayed above, kept structure from template) - Increased text size #}
+             <div>
+                <p class="text-base text-gray-700"> {# Increased text size #}
+                    Showing
+                    <span class="font-medium">{{ page_obj.start_index }}</span>
+                    to
+                    <span class="font-medium">{{ page_obj.end_index }}</span>
+                    of
+                    <span class="font-medium">{{ page_obj.paginator.count }}</span>
+                    results
+                </p>
+            </div>
+            {# Pagination Links - Increased size #}
+            <div>
+                <nav class="isolate inline-flex -space-x-px rounded-md shadow-xs" aria-label="Pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}" class="relative inline-flex items-center rounded-l-md px-3 py-2.5 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"> {# Increased padding #}
+                            <span class="sr-only">Previous</span>
+                            <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    {% else %}
+                        <span class="relative inline-flex items-center rounded-l-md px-3 py-2.5 text-gray-300 ring-1 ring-gray-300 ring-inset cursor-not-allowed"> {# Increased padding #}
+                            <span class="sr-only">Previous</span>
+                            <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                    {% endif %}
+
+                    {# Page numbers logic adapted from pagination.html #}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            {# Current page #}
+                            <a href="#" aria-current="page" class="relative z-10 inline-flex items-center bg-indigo-600 px-5 py-2.5 text-base font-semibold text-white focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{ num }}</a> {# Increased padding and text size #}
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            {# Nearby pages #}
+                            <a href="?page={{ num }}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}" class="relative inline-flex items-center px-5 py-2.5 text-base font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0">{{ num }}</a> {# Increased padding and text size #}
+                        {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+                             {# Ellipsis #}
+                             <span class="relative inline-flex items-center px-5 py-2.5 text-base font-semibold text-gray-700 ring-1 ring-gray-300 ring-inset focus:outline-offset-0">...</span> {# Increased padding and text size #}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.per_page %}&per_page={{ request.GET.per_page }}{% endif %}" class="relative inline-flex items-center rounded-r-md px-3 py-2.5 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"> {# Increased padding #}
+                            <span class="sr-only">Next</span>
+                            <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    {% else %}
+                        <span class="relative inline-flex items-center rounded-r-md px-3 py-2.5 text-gray-300 ring-1 ring-gray-300 ring-inset cursor-not-allowed"> {# Increased padding #}
+                            <span class="sr-only">Next</span>
+                            <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+        // Function to handle per-page changes (no changes needed here)
+        function changeItemsPerPage(value) {
+            // Get current URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Update or add per_page parameter
+            urlParams.set('per_page', value);
+            
+            // Reset to page 1 when changing items per page
+            urlParams.set('page', '1');
+            
+            // Redirect to new URL
+            window.location.href = window.location.pathname + '?' + urlParams.toString();
+        }
+
+        // Multi-select functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.dump-checkbox');
+            const selectionActions = document.getElementById('selection-actions');
+            const selectionCount = document.getElementById('selection-count');
+            const clearSelection = document.getElementById('clear-selection');
+            const createPostBtn = document.getElementById('create-post-btn');
+            const createPostForm = document.getElementById('create-post-form');
+            const selectedIdsInput = document.getElementById('selected-ids');
+            
+            // Track selected dump IDs
+            const selectedDumps = new Set();
+            
+            // Function to update selection UI
+            function updateSelectionUI() {
+                if (selectedDumps.size > 0) {
+                    selectionActions.classList.remove('hidden');
+                    selectionCount.textContent = `${selectedDumps.size} item${selectedDumps.size > 1 ? 's' : ''} selected`;
+                } else {
+                    selectionActions.classList.add('hidden');
+                }
+            }
+            
+            // Add event listeners to checkboxes
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const dumpId = this.value;
+                    
+                    if (this.checked) {
+                        selectedDumps.add(dumpId);
+                    } else {
+                        selectedDumps.delete(dumpId);
+                    }
+                    
+                    updateSelectionUI();
+                });
+                
+                // Stop propagation from checkbox clicks to prevent the row click handler from firing
+                checkbox.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+            
+            // Clear selection button
+            clearSelection.addEventListener('click', function() {
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                selectedDumps.clear();
+                updateSelectionUI();
+            });
+            
+            // Create post button
+            createPostBtn.addEventListener('click', function() {
+                if (selectedDumps.size > 0) {
+                    // Set the selected IDs in the hidden form field
+                    selectedIdsInput.value = Array.from(selectedDumps).join(',');
+                    // Submit the form
+                    createPostForm.submit();
+                }
+            });
+            
+            // Remove the row click handler that was toggling checkboxes
+            // The link inside the row will now function normally to navigate to the detail page
+        });
+    </script>
+</div>
+{% endblock %}

@@ -1,0 +1,266 @@
+{% comment %} {% extends 'unfold/layouts/base_simple.html' %}
+
+{% load i18n unfold %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}
+    {% if subtitle %}
+        {{ subtitle }} |
+    {% endif %}
+
+    {{ title }} | {{ site_title|default:_('Strawberry Fields Admin') }}
+{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+    {% component "unfold/components/container.html" %}
+        {% component "unfold/components/flex.html" with col=True class="gap-8" %}
+            <!-- Property Overview Section -->
+            {% component "unfold/components/flex.html" with col=True class="gap-4" %}
+                {% component "unfold/components/title.html" %}
+                    Property Overview
+                {% endcomponent %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {% component "unfold/components/card.html" %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            Total Properties
+                        {% endcomponent %}
+
+                        {% component "unfold/components/title.html" %}
+                            {{ property_count }}
+                        {% endcomponent %}
+                    {% endcomponent %}
+                    
+                    {% component "unfold/components/card.html" %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            Properties by State
+                        {% endcomponent %}
+                        
+                        {% if property_by_state %}
+                            {% component "unfold/components/flex.html" with col=True class="mt-3 gap-2" %}
+                                {% for state, count in property_by_state %}
+                                    {% component "unfold/components/flex.html" with class="justify-between" %}
+                                        <span>{{ state }}</span>
+                                        {% component "unfold/components/text.html" with class="font-medium" %}
+                                            {{ count }}
+                                        {% endcomponent %}
+                                    {% endcomponent %}
+                                    {% if not forloop.last %}
+                                        {% component "unfold/components/separator.html" %}{% endcomponent %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endcomponent %}
+                        {% endif %}
+                    {% endcomponent %}
+                    
+                    {% component "unfold/components/card.html" %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            Building Types
+                        {% endcomponent %}
+                        
+                        {% if buildings_by_type %}
+                            {% component "unfold/components/flex.html" with col=True class="mt-3 gap-2" %}
+                                {% for type, count in buildings_by_type %}
+                                    {% component "unfold/components/flex.html" with class="justify-between" %}
+                                        <span>{{ type }}</span>
+                                        {% component "unfold/components/text.html" with class="font-medium" %}
+                                            {{ count }}
+                                        {% endcomponent %}
+                                    {% endcomponent %}
+                                    {% if not forloop.last %}
+                                        {% component "unfold/components/separator.html" %}{% endcomponent %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endcomponent %}
+                        {% endif %}
+                    {% endcomponent %}
+                </div>
+            {% endcomponent %}
+            
+            {% component "unfold/components/separator.html" %}{% endcomponent %}
+            
+            <!-- Financing Section -->
+            {% component "unfold/components/flex.html" with col=True class="gap-4" %}
+                {% component "unfold/components/title.html" %}
+                    Financing
+                {% endcomponent %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {% component "unfold/components/card.html" %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            HUD Loans
+                        {% endcomponent %}
+
+                        {% component "unfold/components/title.html" %}
+                            {{ hud_loan_count }}
+                        {% endcomponent %}
+                    {% endcomponent %}
+                    
+                    {% component "unfold/components/card.html" %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            Pending R4R Requests
+                        {% endcomponent %}
+
+                        {% component "unfold/components/title.html" %}
+                            {{ pending_r4r_requests }}
+                        {% endcomponent %}
+                        
+                        {% component "unfold/components/text.html" with class="text-sm text-base-400" %}
+                            Total Amount: ${{ pending_r4r_amount }}
+                        {% endcomponent %}
+                        
+                        {% if pending_r4r_requests > 0 %}
+                            {% component "unfold/components/progress.html" with value=pending_r4r_requests title="Pending requests" class="mt-2" %}
+                            {% endcomponent %}
+                        {% endif %}
+                    {% endcomponent %}
+                    
+                    {% component "unfold/components/card.html" %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            Upcoming Property Taxes
+                        {% endcomponent %}
+
+                        {% component "unfold/components/title.html" %}
+                            {{ upcoming_taxes_count }}
+                        {% endcomponent %}
+                        
+                        {% component "unfold/components/text.html" with class="text-sm text-base-400" %}
+                            Next Due: {{ next_tax_due_date|default:"None" }}
+                        {% endcomponent %}
+                    {% endcomponent %}
+                </div>
+            {% endcomponent %}
+            
+            {% component "unfold/components/separator.html" %}{% endcomponent %}
+            
+            <!-- Leasing Section -->
+            {% component "unfold/components/flex.html" with col=True class="gap-4" %}
+                {% component "unfold/components/title.html" %}
+                    Leasing
+                {% endcomponent %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {% component "unfold/components/card.html" %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            Active Leases
+                        {% endcomponent %}
+
+                        {% component "unfold/components/title.html" %}
+                            {{ active_leases_count }}
+                        {% endcomponent %}
+                    {% endcomponent %}
+                    
+                    {% component "unfold/components/card.html"  %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            Leases Ending Soon
+                        {% endcomponent %}
+
+                        {% component "unfold/components/title.html" %}
+                            {{ leases_ending_soon_count }}
+                        {% endcomponent %}
+                        
+                        {% if active_leases_count > 0 and leases_ending_soon_count > 0 %}
+                            {% component "unfold/components/progress.html" with value=leases_ending_soon_count max=active_leases_count title="Ending within 90 days" class="mt-2" %}
+                            {% endcomponent %}
+                        {% endif %}
+                    {% endcomponent %}
+                    
+                    {% component "unfold/components/card.html" %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            Management Companies
+                        {% endcomponent %}
+
+                        {% component "unfold/components/title.html" %}
+                            {{ management_companies_count }}
+                        {% endcomponent %}
+                    {% endcomponent %}
+                </div>
+            {% endcomponent %}
+            
+            {% component "unfold/components/separator.html" %}{% endcomponent %}
+            
+            <!-- Charts and Activity Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Chart Section -->
+                {% component "unfold/components/card.html" %}
+                    {% component "unfold/components/text.html" with class="font-medium mb-3" %}
+                        Property Distribution by State
+                    {% endcomponent %}
+                    
+                    {% if chart_data %}
+                        {% component "unfold/components/chart/bar.html" with data=chart_data height=250 %}
+                        {% endcomponent %}
+                    {% else %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            No property distribution data available.
+                        {% endcomponent %}
+                    {% endif %}
+                {% endcomponent %}
+                
+                <!-- Activity Tracker Section -->
+                {% component "unfold/components/card.html" %}
+                    {% component "unfold/components/text.html" with class="font-medium mb-3" %}
+                        Property Visit Activity (Last 30 Days)
+                    {% endcomponent %}
+                    
+                    {% if property_visit_tracker %}
+                        {% component "unfold/components/tracker.html" with data=property_visit_tracker %}
+                        {% endcomponent %}
+                        
+                        <!-- Legend for tracker -->
+                        <div class="mt-4 flex items-center gap-4 text-sm">
+                            <div class="flex items-center gap-1">
+                                <div class="w-3 h-3 bg-primary-300"></div>
+                                <span class="text-base-500">1-2 visits</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <div class="w-3 h-3 bg-primary-500"></div>
+                                <span class="text-base-500">3-5 visits</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <div class="w-3 h-3 bg-primary-700"></div>
+                                <span class="text-base-500">6+ visits</span>
+                            </div>
+                        </div>
+                    {% else %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            No property visit data available.
+                        {% endcomponent %}
+                    {% endif %}
+                {% endcomponent %}
+            </div>
+            
+            <!-- Recent Activity -->
+            {% component "unfold/components/flex.html" with col=True class="gap-4" %}
+                {% component "unfold/components/title.html" %}
+                    Recent Activity
+                {% endcomponent %}
+                
+                {% component "unfold/components/card.html" %}
+                    {% if recent_property_visits %}
+                        {% component "unfold/components/text.html" with class="font-medium mb-3" %}
+                            Recent Property Visits
+                        {% endcomponent %}
+                        {% component "unfold/components/table.html" with table=recent_visits_table card_included=1 striped=1 %}
+                        {% endcomponent %}
+                        
+                        <div class="mt-4 flex justify-end">
+                            {% component "unfold/components/button.html" with href="admin:property_app_propertyvisit_changelist" %}
+                                View All Visits
+                            {% endcomponent %}
+                        </div>
+                    {% else %}
+                        {% component "unfold/components/text.html" with class="text-base-500" %}
+                            No recent property visits found.
+                        {% endcomponent %}
+                    {% endif %}
+                {% endcomponent %}
+            {% endcomponent %}
+        {% endcomponent %}
+    {% endcomponent %}
+{% endblock %} {% endcomment %}

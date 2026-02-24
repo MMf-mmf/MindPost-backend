@@ -1,0 +1,412 @@
+{% extends "base/home.html" %}
+
+{% block content %}
+<div class="bg-gray-50 py-8 sm:py-12">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <!-- Back Navigation -->
+        <div class="mb-8">
+            <a href="{% url 'brain_dump_list' %}" class="inline-flex items-center gap-x-1.5 text-base font-semibold text-indigo-600 hover:text-indigo-500">
+                <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                </svg>
+                Back to List
+            </a>
+        </div>
+
+        <!-- Status message based on query parameters -->
+        {% if request.GET.connection_status %}
+            <div class="mb-8 rounded-lg bg-white shadow-lg ring-1 ring-black/5">
+                <div class="p-5">
+                    <div class="flex items-start">
+                        <div class="shrink-0">
+                            {% if request.GET.connection_status == 'success' or request.GET.connection_status == 'success_oauth1' %}
+                                <svg class="size-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                            {% elif request.GET.connection_status == 'error' or request.GET.connection_status == 'error_oauth1' %}
+                                <svg class="size-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.008v.008H12v-.008Z" />
+                                </svg>
+                            {% else %}
+                                <svg class="size-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3 w-0 flex-1 pt-0.5">
+                            {% if request.GET.connection_status == 'success' or request.GET.connection_status == 'success_oauth1' %}
+                                <p class="text-base font-medium text-gray-900">Connection Successful!</p>
+                                <p class="mt-1 text-base text-gray-500">Your Twitter account has been successfully connected.</p>
+                            {% elif request.GET.connection_status == 'error' or request.GET.connection_status == 'error_oauth1' %}
+                                <p class="text-base font-medium text-gray-900">Connection Failed</p>
+                                <p class="mt-1 text-base text-gray-500">There was a problem connecting your Twitter account. Please try again.</p>
+                            {% else %}
+                                <p class="text-base font-medium text-gray-900">Connection Status</p>
+                                <p class="mt-1 text-base text-gray-500">Your connection status has been updated.</p>
+                            {% endif %}
+                        </div>
+                        <div class="ml-4 flex shrink-0">
+                            <a href="braindump://settings/complete?status={{ request.GET.connection_status }}"
+                            class="inline-flex items-center gap-x-2 rounded-md bg-white px-4 py-2.5 text-base font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            onclick="handleAppRedirect(event, '{% url 'brain_dump' %}')">
+                                Return to App
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function handleAppRedirect(event, webFallbackUrl) {
+                    window.location.href = event.target.href;
+                    setTimeout(function() {
+                        console.log("Redirecting to web fallback URL: " + webFallbackUrl);
+                        window.location.href = webFallbackUrl;
+                    }, 500);
+                    event.preventDefault();
+                }
+            </script>
+        {% endif %}
+
+        <div class="bg-white shadow-lg rounded-xl overflow-hidden mb-10">
+            <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-8">
+                <h1 class="text-3xl font-bold text-white">Settings</h1>
+                <p class="mt-1 text-base text-white opacity-90">Manage your social media connections and preferences</p>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-lg rounded-xl overflow-hidden mb-10">
+            <div class="p-8 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <svg class="h-5 w-5 mr-2 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                    </svg>
+                    Social Media Connections
+                </h2>
+                <p class="mt-1 text-base text-gray-600">Connect your social media accounts to share your brain dumps</p>
+            </div>
+
+            <div class="p-8 space-y-6">
+                <!-- Twitter Connection -->
+                <div class="rounded-lg border border-gray-200 p-5 hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 {% if user.twitter_connection %}text-blue-500{% else %}text-gray-400{% endif %}" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <div class="font-medium text-base text-gray-900">
+                                    Twitter / X 
+                                    {% if user.twitter_connection %}
+                                        (@{{ user.twitter_connection.twitter_username }})
+                                    {% endif %}
+                                </div>
+                                {% if user.twitter_connection %}
+                                    <div class="text-sm text-gray-500">
+                                        Connected: {{ user.twitter_connection.connected_at|date:"M d, Y" }}
+                                        {% if user.twitter_connection.oauth1_access_token %}
+                                            <span class="ml-2 px-2 py-0.5 text-xs font-medium text-sky-700 bg-sky-100 rounded-full">Uploads Image Enabled</span>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-sm text-gray-500">Not Connected</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end space-y-2">
+                            {% if user.twitter_connection %}
+                                {% if not user.twitter_connection.is_refresh_valid and user.twitter_connection.oauth2_access_token %} <!-- Assuming is_refresh_valid checks OAuth2 token -->
+                                    <a href="{% url 'twitter_connect' %}" class="inline-flex items-center gap-x-2 rounded-md bg-yellow-50 px-4 py-2.5 text-base font-semibold text-yellow-600 shadow-xs hover:bg-yellow-100">
+                                        <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v4.59L7.3 9.24a.75.75 0 00-1.1 1.02l3.25 3.5a.75.75 0 001.1 0l3.25-3.5a.75.75 0 10-1.1-1.02l-1.95 2.1V6.75z" clip-rule="evenodd" /></svg>
+                                        Re-authenticate (OAuth 2.0)
+                                    </a>
+                                {% endif %}
+                                {% if user.twitter_connection.oauth2_access_token and not user.twitter_connection.oauth1_access_token %}
+                                    <a href="{% url 'twitter_connect_oauth1' %}" class="inline-flex items-center gap-x-2 rounded-md bg-sky-600 px-4 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">
+                                        <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" /></svg>
+                                        Enable Uploads (OAuth 1.0a)
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'twitter_disconnect' %}" class="inline-flex items-center gap-x-2 rounded-md bg-red-50 px-4 py-2.5 text-base font-semibold text-red-600 shadow-xs hover:bg-red-100">
+                                    <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM6.75 9.25a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5z" clip-rule="evenodd" /></svg>
+                                    Disconnect All
+                                </a>
+                            {% else %}
+                                <a href="{% url 'twitter_connect' %}" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-4 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                    <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" /></svg>
+                                    Connect (OAuth 2.0 - General)
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coming Soon Social Media Platforms -->
+                <div class="p-5 sm:p-6 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 class="text-base font-medium text-gray-900 mb-4">Coming Soon</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <!-- LinkedIn Connection (Coming Soon) -->
+                        <div class="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 bg-white opacity-60">
+                            <div class="flex-shrink-0 h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="text-base font-medium text-gray-900">LinkedIn</p>
+                                <p class="text-sm text-gray-500">Coming soon</p>
+                            </div>
+                        </div>
+
+                        <!-- Facebook Connection (Coming Soon) -->
+                        <div class="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 bg-white opacity-60">
+                            <div class="flex-shrink-0 h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="text-base font-medium text-gray-900">Facebook</p>
+                                <p class="text-sm text-gray-500">Coming soon</p>
+                            </div>
+                        </div>
+
+                        <!-- WhatsApp Connection (Coming Soon) -->
+                        <div class="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 bg-white opacity-60">
+                            <div class="flex-shrink-0 h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="text-base font-medium text-gray-900">WhatsApp</p>
+                                <p class="text-sm text-gray-500">Coming soon</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Management Section -->
+        <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+            <div class="p-8 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <svg class="h-5 w-5 mr-2 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765 4.5 4.5 0 0 1 8.302-3.046 3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z" clip-rule="evenodd" />
+                    </svg>
+                    Subscription Management
+                </h2>
+                <p class="mt-1 text-base text-gray-600">Manage your Mind Post subscription</p>
+            </div>
+
+            <div class="p-8 space-y-6">
+                {% if user.subscription_status == 'active' or user.subscription_status == 'trialing' %}
+                    <div class="mb-6">
+                        <h3 class="text-xl font-medium text-gray-900">Current Plan: {{ user.get_subscription_tier_display|default:"N/A" }}</h3>
+                        <p class="text-base text-green-700 font-medium">Status: {{ user.get_subscription_status_display|default:"N/A" }}</p>
+                        {% if subscription_cancel_at %}
+                            <p class="text-base text-amber-600">Your subscription will end on {{ subscription_cancel_at|date:"F j, Y" }}.</p>
+                        {% endif %}
+                    </div>
+                    <div class="mx-auto grid max-w-lg grid-cols-1 items-start gap-y-8 lg:max-w-4xl lg:grid-cols-2">
+                        {% if user.subscription_tier == 'basic' or user.subscription_tier == 'pro' %}
+                        <div class="rounded-3xl bg-white p-8 shadow-xl ring-1 ring-gray-900/10 sm:p-10 {% if user.subscription_tier == 'pro' %}opacity-75{% endif %}">
+                            <h3 id="tier-basic" class="text-base font-semibold leading-7 text-indigo-600">Basic Plan</h3>
+                            <div class="mt-4 flex items-baseline gap-x-2">
+                                <span class="text-5xl font-bold tracking-tight text-gray-900">$15</span>
+                                <span class="text-sm font-semibold leading-6 text-gray-600">/month</span>
+                            </div>
+                            <p class="mt-6 text-sm leading-6 text-gray-600">The essential features to get you started.</p>
+                            <ul role="list" class="mt-8 space-y-3 text-sm leading-6 text-gray-600">
+                                <li class="flex gap-x-3">
+                                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                    20 recordings per day
+                                </li>
+                                <li class="flex gap-x-3">
+                                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                    50 chat messages per day
+                                </li>
+                                <li class="flex gap-x-3">
+                                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                    10 posts per day
+                                </li>
+                                <li class="flex gap-x-3">
+                                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                    Up to 5 min long recordings
+                                </li>
+                            </ul>
+                            {% if user.subscription_tier == 'basic' %}
+                                {% if subscription_canceling %}
+                                    <form action="{% url 'subscriptions_app:reactivate_subscription' %}" method="POST" class="mt-8">
+                                        {% csrf_token %}
+                                        <button type="submit" class="block w-full rounded-md bg-green-600 px-3.5 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">Reactivate Plan</button>
+                                    </form>
+                                {% else %}
+                                    <button disabled class="mt-8 block w-full rounded-md bg-gray-400 px-3.5 py-2 text-center text-sm font-semibold text-white shadow-sm cursor-not-allowed">Current Plan</button>
+                                    <form action="{% url 'subscriptions_app:cancel_subscription' %}" method="post" class="mt-3">
+                                        {% csrf_token %}
+                                        <button type="submit" class="block w-full rounded-md bg-red-50 px-3.5 py-2 text-center text-sm font-semibold text-red-600 shadow-sm hover:bg-red-100" onclick="return confirm('Are you sure you want to cancel your subscription at the end of the current period?');">Cancel Subscription</button>
+                                    </form>
+                                {% endif %}
+                            {% elif user.subscription_tier == 'pro' %}
+                                <button disabled class="mt-8 block w-full rounded-md bg-indigo-600/50 px-3.5 py-2 text-center text-sm font-semibold text-white shadow-sm cursor-not-allowed">View Details</button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        {% if user.subscription_tier == 'pro' or user.subscription_tier == 'basic' %}
+                        <div class="rounded-3xl bg-white p-8 shadow-xl ring-1 ring-gray-900/10 sm:p-10 {% if user.subscription_tier == 'basic' %}border-2 border-indigo-600{% endif %}">
+                            <h3 id="tier-pro" class="text-base font-semibold leading-7 text-indigo-600">Pro Plan</h3>
+                            <div class="mt-4 flex items-baseline gap-x-2">
+                                <span class="text-5xl font-bold tracking-tight text-gray-900">$30</span>
+                                <span class="text-sm font-semibold leading-6 text-gray-600">/month</span>
+                            </div>
+                            <p class="mt-6 text-sm leading-6 text-gray-600">Unlock powerful features for advanced users.</p>
+                            <ul role="list" class="mt-8 space-y-3 text-sm leading-6 text-gray-600">
+                                <li class="flex gap-x-3">
+                                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                    50 recordings per day
+                                </li>
+                                <li class="flex gap-x-3">
+                                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                    100 chat messages per day
+                                </li>
+                                <li class="flex gap-x-3">
+                                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                    20 posts per day
+                                </li>
+                                <li class="flex gap-x-3">
+                                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                    Priority feature request
+                                </li>
+                                <li class="flex gap-x-3">
+                                    <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+                                    Up to 10 min long recordings
+                                </li>
+                            </ul>
+                            {% if user.subscription_tier == 'pro' %}
+                                {% if subscription_canceling %}
+                                    <form action="{% url 'subscriptions_app:reactivate_subscription' %}" method="POST" class="mt-8">
+                                        {% csrf_token %}
+                                        <button type="submit" class="block w-full rounded-md bg-green-600 px-3.5 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">Reactivate Plan</button>
+                                    </form>
+                                {% else %}
+                                    <button disabled class="mt-8 block w-full rounded-md bg-gray-400 px-3.5 py-2 text-center text-sm font-semibold text-white shadow-sm cursor-not-allowed">Current Plan</button>
+                                    <form action="{% url 'subscriptions_app:cancel_subscription' %}" method="post" class="mt-3">
+                                        {% csrf_token %}
+                                        <button type="submit" class="block w-full rounded-md bg-red-50 px-3.5 py-2 text-center text-sm font-semibold text-red-600 shadow-sm hover:bg-red-100" onclick="return confirm('Are you sure you want to cancel your subscription at the end of the current period?');">Cancel Subscription</button>
+                                    </form>
+                                {% endif %}
+                            {% elif user.subscription_tier == 'basic' %}
+                                <a href="{% url 'subscriptions_app:upgrade_page' %}?plan=Pro" aria-describedby="tier-pro" class="mt-8 block w-full rounded-md bg-indigo-600 px-3.5 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Upgrade to Pro</a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mt-10 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Your Current Plan Features</h3>
+                        <dl class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 md:grid-cols-3">
+                            <div class="relative">
+                                <dt class="text-sm font-medium text-gray-500">Recordings</dt>
+                                <dd class="mt-1 text-base font-semibold text-gray-900">
+                                    {% if user_limits %}{{ user.current_recordings }} / {{ user_limits.max_recording }}{% else %}N/A{% endif %}
+                                </dd>
+                            </div>
+                            <div class="relative">
+                                <dt class="text-sm font-medium text-gray-500">Chat Messages</dt>
+                                <dd class="mt-1 text-base font-semibold text-gray-900">
+                                    {% if user_limits %}{{ user.current_chat_messages }} / {{ user_limits.max_chat_messages }}{% else %}N/A{% endif %}
+                                </dd>
+                            </div>
+                            <div class="relative">
+                                <dt class="text-sm font-medium text-gray-500">Post Generations</dt>
+                                <dd class="mt-1 text-base font-semibold text-gray-900">
+                                    {% if user_limits %}{{ user.current_post_generations }} / {{ user_limits.max_post_generations }}{% else %}N/A{% endif %}
+                                </dd>
+                            </div>
+                             <div class="relative">
+                                <dt class="text-sm font-medium text-gray-500">Post Submissions</dt>
+                                <dd class="mt-1 text-base font-semibold text-gray-900">
+                                    {% if user_limits %}{{ user.current_post_submissions }} / {{ user_limits.max_post_submissions }}{% else %}N/A{% endif %}
+                                </dd>
+                            </div>
+                            <div class="relative">
+                                <dt class="text-sm font-medium text-gray-500">Max Recording Length</dt>
+                                <dd class="mt-1 text-base font-semibold text-gray-900">
+                                    {% if user_limits %}{{ user_limits.max_recording_length_minutes }} min{% else %}N/A{% endif %}
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                {% elif user.subscription_status == 'canceled' %}
+                     <div class="text-center mb-8">
+                        <h3 class="text-xl font-medium text-gray-900">Subscription Canceled</h3>
+                        {% if subscription_cancel_at %}
+                            <p class="text-base text-gray-600 mt-1">Your subscription ended on {{ subscription_cancel_at|date:"F j, Y" }}.</p>
+                        {% else %}
+                            <p class="text-base text-gray-600 mt-1">Your subscription has been canceled.</p>
+                        {% endif %}
+                         <p class="mt-4 text-base text-gray-500">Choose a new plan to re-subscribe and unlock premium features.</p>
+                     </div>
+                     {% include "brain_dump_app/includes/_subscription_plan_cards.html" %}
++                    <div class="mt-8 text-center">
++                        <a href="{% url 'subscriptions_app:upgrade_page' %}" class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-6 py-3 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
++                            View Subscription Plans
++                        </a>
++                    </div>
+ 
+                 {% elif user.subscription_status == 'past_due' or user.subscription_status == 'incomplete' or user.subscription_status == 'unpaid' %}
+                     <div class="text-center mb-8">
+                         <h3 class="text-xl font-medium text-gray-900">Payment Issue</h3>
+                         <p class="mt-2 text-base text-gray-500">Your payment was not successful. Please update your payment information.</p>
+                     </div>
+                     {% include "brain_dump_app/includes/_subscription_plan_cards.html" %}
+                    <div class="mt-8 text-center">
+                        <a href="{% url 'subscriptions_app:upgrade_page' %}" class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-6 py-3 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            View Subscription Plans
+                        </a>
+                    </div>
+                 
+                 {% else %}
+                     <div class="text-center mb-8">
+                         <h3 class="text-xl font-medium text-gray-900">No Active Subscription</h3>
+                         <p class="mt-2 text-base text-gray-500">Choose a plan to get started and unlock premium features.</p>
+                     </div>
+                     {% include "brain_dump_app/includes/_subscription_plan_cards.html" %}
+                    <div class="mt-8 text-center">
+                        <a href="{% url 'subscriptions_app:upgrade_page' %}" class="inline-flex items-center justify-center w-1/2 mx-auto rounded-md bg-indigo-600 px-6 py-3 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            Choose Plan
+                        </a>
+                    </div>
+ 
+                 {% endif %}
+ 
+{# Removed extra_js block as checkout JS is no longer needed here #}
+{% endblock %}
+
+</file_content>
+
+Now that you have the latest state of the file, try the operation again with fewer, more precise SEARCH blocks. For large files especially, it may be prudent to try to limit yourself to <5 SEARCH/REPLACE blocks at a time, then wait for the user to respond with the result of the operation before following up with another replace_in_file call to make additional edits.
+(If you run into this error 3 times in a row, you may use the write_to_file tool as a fallback.)
+</error><environment_details>
+# VSCode Visible Files
+brain_dump_app/templates/brain_dump_app/settings.html
+
+# VSCode Open Tabs
+brain_dump_app/models.py
+brain_dump_app/views.py
+brain_dump_app/urls.py
+project/settings/local.py
+brain_dump_app/templates/brain_dump_app/settings.html
+
+# Current Time
+5/9/2025, 1:48:00 PM (America/Chicago, UTC-5:00)
+
+# Context Window Usage
+116,793 / 1,048.576K tokens used (11%)
+
+# Current Mode
+ACT MODE
+</environment_details>

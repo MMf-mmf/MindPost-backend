@@ -1,0 +1,45 @@
+# Version control
+.git
+.gitignore
+
+# Python
+*.pyc
+__pycache__
+*.pyo
+*.pyd
+.Python
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+media/
+staticfiles/
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local development
+*.sqlite3
+.DS_Store
+
+# Test
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Node
+node_modules/

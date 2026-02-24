@@ -1,0 +1,685 @@
+{% extends 'base/home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-gray-50 to-gray-100 py-12"> {# Removed min-h-[80vh] #}
+    <div class="container mx-auto px-4 max-w-4xl"> {# Changed max-w-3xl to max-w-4xl #}
+        <div class="mb-8"> {# Increased margin #}
+            {# Consistent link style - Increased text size #}
+            <a href="{% url 'brain_dump_list' %}" class="inline-flex items-center gap-x-1.5 text-base font-semibold text-indigo-600 hover:text-indigo-500">
+                <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                </svg>
+                Back to List
+            </a>
+        </div>
+
+        <!-- Recent Brain Dump Card -->
+        {% if recent_dump %}
+        {# Consistent card style with ring - Increased margin #}
+        <div class="bg-white rounded-lg shadow ring-1 ring-black/5 overflow-hidden mb-8 recent-dump-card">
+            {# Consistent header style (using a neutral gray) - Increased padding #}
+            <div class="bg-gray-50 p-5 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-900">Your Latest Brain Dump</h2> {# Increased text size #}
+                <span class="text-base text-gray-500">{{ recent_dump.created_at|date:"M d, Y • g:i A" }}</span> {# Increased text size #}
+            </div>
+            <div class="p-5 sm:p-6"> {# Consistent padding - Increased base padding #}
+                <div class="max-h-36 overflow-y-auto mb-5 text-base text-gray-600"> {# Increased max-h, margin, text size #}
+                    {{ recent_dump.transcription|truncatechars:300 }}
+                </div>
+                <div class="flex justify-between items-center">
+                    <div>
+                        {% if recent_dump.tags.all %}
+                        <div class="flex flex-wrap gap-2"> {# Increased gap #}
+                            {% for tag in recent_dump.tags.all %}
+                            {# Consistent tag style - Increased size #}
+                            <span class="inline-flex items-center rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 ring-1 ring-inset ring-indigo-600/20"> {# Increased padding and text size #}
+                                #{{ tag }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {# Consistent link style (primary text color) - Increased size #}
+                    <a href="{% url 'brain_dump_detail' recent_dump.id %}"
+                       class="inline-flex items-center gap-x-1.5 text-base font-semibold text-indigo-600 hover:text-indigo-900"> {# Increased text size and gap #}
+                        View Details
+                        <svg xmlns="http://www.w3.org/2000/svg" class="-mr-0.5 size-5" viewBox="0 0 20 20" fill="currentColor"> {# Increased size #}
+                            <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Main Recording Card -->
+        <div class="bg-white rounded-lg shadow ring-1 ring-black/5 overflow-hidden"> {# Consistent card style #}
+            <!-- Header Section -->
+            {# Use a simpler, consistent header style - Increased padding #}
+            <div class="bg-gray-50 p-5 sm:px-6 border-b border-gray-200">
+                <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3"> {# Increased gap-y #}
+                    <div>
+                        <h1 class="text-lg font-semibold text-gray-900">Record Your Brain Dump</h1> {# Increased text size #}
+                        <p class="mt-1 text-base text-gray-500">Capture your thoughts effortlessly</p> {# Increased text size #}
+                    </div>
+                    {% if user_limits %}
+                    <div class="text-right text-base text-gray-500"> {# Increased text size #}
+                        <p>Recordings: {{ user.current_recordings }} / {{ user_limits.max_recording }}</p>
+                    </div>
+                    {% elif user.is_authenticated %}
+                    <div class="text-right text-base text-gray-500"> {# Increased text size #}
+                        <p>No active subscription found.</p>
+                        {# Consistent link style - Increased text size #}
+                        <a href="{% url 'subscriptions_app:upgrade_page' %}" class="font-semibold text-base text-indigo-600 hover:text-indigo-500">Upgrade Plan</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="p-5 sm:p-6 lg:p-8"> {# Consistent padding - Increased base padding #}
+                <!-- Status & Timer Display -->
+                <div class="flex flex-col items-center mb-10"> {# Increased margin #}
+                    <div class="transition-all duration-300 mb-4" id="statusContainer"> {# Increased margin #}
+                        {# Standardized text style - Increased text size #}
+                        <span id="status" class="text-base font-medium text-gray-700 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                            </svg>
+                            Ready to record
+                        </span>
+                    </div>
+                    {# Standardized timer style - Increased size #}
+                    <div id="timer" class="hidden bg-gray-900 text-white text-2xl font-mono py-2 px-5 rounded-full shadow-sm">00:00</div> {# Increased text size and padding #}
+                </div>
+
+                <!-- Recording Controls -->
+                <div class="flex flex-col items-center mb-12"> {# Increased margin #}
+                    {% if user_limits %}
+                        {% if user.current_recordings >= user_limits.max_recording %}
+                            {# Consistent disabled button style - Increased size #}
+                            <button id="recordButton" type="button"
+                                    class="inline-flex items-center gap-x-2.5 rounded-md bg-gray-100 px-5 py-3 text-lg font-semibold text-gray-400 ring-1 ring-gray-200 ring-inset cursor-not-allowed" {# Increased padding, text size, gap #}
+                                    disabled title="Recording limit reached. Upgrade your plan for more.">
+                                <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a.75.75 0 000 1.5h6a.75.75 0 000-1.5H7z" clip-rule="evenodd" />
+                                </svg>
+                                Start Recording
+                            </button>
+                            <p class="text-center text-red-600 mt-4 text-base"> {# Increased margin and text size #}
+                                You've reached your recording limit ({{ user.current_recordings }}/{{ user_limits.max_recording }}).
+                                {# Consistent link style - Increased text size #}
+                                <a href="{% url 'subscriptions_app:upgrade_page' %}" class="font-semibold text-base text-indigo-600 hover:text-indigo-500 underline">Upgrade your plan</a> for more recordings.
+                            </p>
+                        {% else %}
+                            {# Consistent primary button style (indigo) - Increased size #}
+                            <button id="recordButton" type="button"
+                                    class="inline-flex items-center gap-x-2.5 rounded-md bg-indigo-600 px-5 py-3 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transform transition-all duration-150 hover:scale-105"> {# Increased padding, text size, gap #}
+                                <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a.75.75 0 000 1.5h6a.75.75 0 000-1.5H7z" clip-rule="evenodd" />
+                                </svg>
+                                Start Recording
+                            </button>
+                        {% endif %}
+                        {% else %}
+                         {# Consistent primary button style (indigo) - Increased size #}
+                        <button id="recordButton" type="button"
+                                class="inline-flex items-center gap-x-2.5 rounded-md bg-indigo-600 px-5 py-3 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transform transition-all duration-150 hover:scale-105"> {# Increased padding, text size, gap #}
+                            <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a.75.75 0 000 1.5h6a.75.75 0 000-1.5H7z" clip-rule="evenodd" />
+                            </svg>
+                            Start Recording
+                        </button>
+                    {% endif %}
+                </div>
+
+                <!-- Audio Waveform Visualization -->
+                <div id="waveform" class="w-full h-24 mb-8 hidden"></div> {# Increased height and margin #}
+
+                <!-- Audio Preview -->
+                <div id="audioPreview" class="hidden space-y-8"> {# Increased spacing #}
+                    {# Consistent card style for preview - Increased padding #}
+                    <div class="bg-gray-50 p-5 sm:p-6 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-semibold mb-5 text-gray-900">Review Your Recording</h3> {# Increased text size and margin #}
+                        <div class="flex flex-col">
+                            <div class="mb-3 text-center text-base text-gray-500"> {# Increased margin and text size #}
+                                <span id="timeDisplay">00:00 / 00:00</span>
+                            </div>
+                            <audio id="audioPlayer" controls class="w-full custom-audio-player rounded-md"></audio>
+                        </div>
+                    </div>
+
+                    <!-- Traditional Django Form for submission -->
+                    <form id="audioUploadForm" method="post" action="{% url 'brain_dump' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!-- Hidden file input that will be populated with the recorded audio -->
+                        <input type="file" id="audio_file_input" name="audio_file" class="hidden" required />
+                        <input type="hidden" id="duration_seconds" name="duration_seconds" value="" />
+
+                        <div class="flex justify-center space-x-5"> {# Increased spacing #}
+                            {# Consistent Save Button - Primary Style - Increased size #}
+                            <button type="submit" id="uploadButton" class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-4 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"> {# Increased padding, text size, gap #}
+                                <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                                Save Recording
+                            </button>
+                            {# Consistent Discard Button - Secondary Style - Increased size #}
+                            <button type="button" id="discardButton" class="inline-flex items-center gap-x-2 rounded-md bg-white px-4 py-2.5 text-base font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50"> {# Increased padding, text size, gap #}
+                                <svg class="-ml-0.5 size-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Discard
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Success Message -->
+                {# Consistent alert style - Increased margin #}
+                <div id="successMessage" class="hidden mt-8 rounded-lg bg-white shadow-lg ring-1 ring-black/5">
+                  <div class="p-5"> {# Increased padding #}
+                    <div class="flex items-start">
+                      <div class="shrink-0">
+                        <svg class="size-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                      </div>
+                      <div class="ml-3 w-0 flex-1 pt-0.5">
+                        <p class="text-base font-medium text-gray-900">Upload Successful!</p> {# Increased text size #}
+                        <p class="mt-1 text-base text-gray-500">Your brain dump has been saved and will be processed shortly.</p> {# Increased text size #}
+                        {# Consistent Record Another Button - Soft Green Style - Increased size #}
+                        <div class="mt-4"> {# Increased margin #}
+                            <a href="{% url 'brain_dump' %}" class="inline-flex items-center gap-x-2 rounded-md bg-green-50 px-4 py-2.5 text-base font-semibold text-green-600 shadow-xs hover:bg-green-100"> {# Increased padding, text size, gap #}
+                                <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                </svg>
+                                Record Another
+                            </a>
+                        </div>
+                      </div>
+                      {# Optional close button if needed
+                      <div class="ml-4 flex shrink-0">
+                        <button type="button" class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
+                          <span class="sr-only">Close</span>
+                          <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                          </svg>
+                        </button>
+                      </div>
+                      #}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Error Display -->
+                {# Consistent alert style - Increased margin #}
+                <div id="error" class="hidden mt-8 rounded-lg bg-white shadow-lg ring-1 ring-black/5">
+                  <div class="p-5"> {# Increased padding #}
+                    <div class="flex items-start">
+                      <div class="shrink-0">
+                        <svg class="size-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.008v.008H12v-.008Z" />
+                        </svg>
+                      </div>
+                      <div class="ml-3 w-0 flex-1 pt-0.5">
+                        <p class="text-base font-medium text-gray-900 error-message-text">Error placeholder</p> {# Increased text size #}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Django Messages (for server-side errors/success) -->
+                {% if messages %}
+                <div class="mt-8 space-y-5"> {# Increased margin and spacing #}
+                    {% for message in messages %}
+                    {# Use consistent alert styling from templates/alert.html #}
+                    <div class="rounded-lg bg-white shadow-lg ring-1 ring-black/5">
+                      <div class="p-5"> {# Increased padding #}
+                        <div class="flex items-start">
+                          <div class="shrink-0">
+                            {% if message.tags == 'success' %}
+                                <svg class="size-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                            {% elif message.tags == 'error' %}
+                                <svg class="size-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.008v.008H12v-.008Z" />
+                                </svg>
+                            {% else %} {# Default to info style #}
+                                <svg class="size-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                </svg>
+                            {% endif %}
+                          </div>
+                          <div class="ml-3 w-0 flex-1 pt-0.5">
+                            <p class="text-base font-medium text-gray-900">{{ message }}</p> {# Increased text size #}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Instructions Card -->
+        <div class="mt-10 bg-white rounded-lg shadow ring-1 ring-black/5 p-5 sm:p-6"> {# Increased margin and base padding #}
+            <h3 class="text-lg font-semibold mb-4 text-gray-900">Tips for a Great Recording</h3> {# Increased text size and margin #}
+            <ul class="list-disc pl-6 space-y-2 text-base text-gray-600"> {# Increased padding, spacing, text size #}
+                <li>Find a quiet space with minimal background noise</li>
+                <li>Speak clearly and at a moderate pace</li>
+                <li>Keep your device microphone about 6-12 inches from your mouth</li>
+                <li>Allow the transcription system a few moments to process after uploading</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom styles for the audio player - Keep as Tailwind utilities might not cover all pseudo-elements */
+.custom-audio-player {
+    height: 50px; /* Increased height */
+    background-color: #f3f4f6; /* gray-100 */
+    border-radius: 0.375rem; /* rounded-md */
+}
+
+.custom-audio-player::-webkit-media-controls-panel {
+    background-color: #f3f4f6; /* gray-100 */
+}
+
+.custom-audio-player::-webkit-media-controls-play-button {
+    background-color: #4f46e5; /* indigo-600 */
+    border-radius: 9999px; /* rounded-full */
+    /* Add other styles like size, margin if needed */
+}
+/* Add vendor prefixes if needed for other browsers */
+
+/* Recording animation - Keep custom animation */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7); } /* Use indigo color */
+    70% { box-shadow: 0 0 0 15px rgba(79, 70, 229, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+}
+
+.recording-active-pulse { /* Renamed to avoid conflict if 'recording-active' is used elsewhere */
+    animation: pulse 2s infinite;
+}
+
+/* max-h-32 is a utility class, keep it in HTML */
+
+/* Scrollbar styling - Keep custom styles */
+.max-h-32::-webkit-scrollbar {
+    width: 4px;
+}
+.max-h-32::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+.max-h-32::-webkit-scrollbar-thumb {
+    background: #cbd5e0; /* gray-400 */
+    border-radius: 10px;
+}
+.max-h-32::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0; /* gray-500 */
+}
+
+/* Highlight animation - Keep custom animation */
+@keyframes highlightPulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } /* Use green color */
+    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.highlight-pulse {
+    animation: highlightPulse 2s ease-out 1;
+}
+</style>
+
+<!-- Recording Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation for recent dump card
+        const recentDumpCard = document.querySelector('.recent-dump-card');
+        if (recentDumpCard) {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('justRecorded') === 'true') {
+                recentDumpCard.classList.add('highlight-pulse');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        let audioChunks = [];
+        let startTime;
+        let timerInterval;
+        let mediaRecorder;
+        let totalRecordingDuration = 0;
+        let isResetting = false;
+        let selectedMimeType = 'audio/webm'; // Default
+        let selectedFileExtension = 'webm'; // Default
+
+        const recordButton = document.getElementById('recordButton');
+        const audioPreview = document.getElementById('audioPreview');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const uploadButton = document.getElementById('uploadButton');
+        const discardButton = document.getElementById('discardButton');
+        const status = document.getElementById('status');
+        const statusContainer = document.getElementById('statusContainer');
+        const timer = document.getElementById('timer');
+        const errorDisplay = document.getElementById('error');
+        const errorTextElement = errorDisplay.querySelector('.error-message-text'); // Get the specific text element
+        const audioFileInput = document.getElementById('audio_file_input');
+        const durationInput = document.getElementById('duration_seconds');
+        const audioUploadForm = document.getElementById('audioUploadForm');
+
+        // --- MIME Type Selection ---
+        function getSupportedMimeType() {
+            const preferredTypes = [
+                // Removed audio/mp3 as direct recording is generally unsupported
+                { mimeType: 'audio/mp4', extension: 'mp4' }, // Often uses AAC, good support
+                { mimeType: 'audio/aac', extension: 'aac' }, // Direct AAC if supported
+                { mimeType: 'audio/ogg;codecs=opus', extension: 'ogg' }, // Good quality, variable support
+                { mimeType: 'audio/webm;codecs=opus', extension: 'webm' }, // Common default
+                { mimeType: 'audio/webm', extension: 'webm' } // Basic webm
+            ];
+
+            for (const typeInfo of preferredTypes) {
+                if (MediaRecorder.isTypeSupported(typeInfo.mimeType)) {
+                    console.log(`Using supported mimeType: ${typeInfo.mimeType}`);
+                    return typeInfo;
+                }
+            }
+            console.log('Using default mimeType: audio/webm');
+            return { mimeType: 'audio/webm', extension: 'webm' }; // Fallback
+        }
+
+        // Determine the best supported MIME type on load
+        if (window.MediaRecorder) {
+            const supportedTypeInfo = getSupportedMimeType();
+            selectedMimeType = supportedTypeInfo.mimeType;
+            selectedFileExtension = supportedTypeInfo.extension;
+        }
+        // --- End MIME Type Selection ---
+
+
+        // Check for MediaRecorder support
+        if (!navigator.mediaDevices || !window.MediaRecorder) {
+            showError('Audio recording is not supported in your browser.');
+            if(recordButton) recordButton.disabled = true;
+        }
+
+        function showError(message) {
+            if (errorTextElement) {
+                errorTextElement.textContent = message;
+                errorDisplay.classList.remove('hidden');
+            } else {
+                console.error("Error display text element not found!");
+                alert(message); // Fallback alert
+            }
+        }
+
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            totalRecordingDuration = elapsed;
+            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const seconds = (elapsed % 60).toString().padStart(2, '0');
+            timer.textContent = `${minutes}:${seconds}`;
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds) || !isFinite(seconds)) return "00:00";
+            const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${minutes}:${secs}`;
+        }
+
+        function updateTimeDisplay(currentTime, duration) {
+            const formattedCurrent = formatTime(currentTime);
+            const actualDuration = (!isNaN(duration) && isFinite(duration) && duration > 0)
+                ? duration
+                : totalRecordingDuration;
+            const formattedDuration = formatTime(actualDuration);
+            timeDisplay.textContent = `${formattedCurrent} / ${formattedDuration}`;
+        }
+
+        function updateStatusDisplay(message, isRecording = false) {
+            status.innerHTML = message;
+            if (isRecording) {
+                statusContainer.classList.add('text-red-500'); // Keep text red for recording status
+                recordButton.classList.add('recording-active-pulse'); // Add pulse animation to button
+            } else {
+                statusContainer.classList.remove('text-red-500');
+                recordButton.classList.remove('recording-active-pulse'); // Remove pulse animation
+            }
+        }
+
+        function resetUI() {
+            isResetting = true;
+
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                clearInterval(timerInterval);
+            }
+
+            if (!audioPreview.classList.contains('hidden')) {
+                audioPreview.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                setTimeout(() => {
+                    audioPreview.classList.add('hidden');
+                    audioPreview.classList.remove('opacity-0', 'transition-opacity', 'duration-300');
+                }, 300);
+            }
+
+            errorDisplay.classList.add('hidden');
+            if(recordButton) recordButton.disabled = false; // Check if button exists
+            if(uploadButton) {
+                uploadButton.disabled = false;
+                uploadButton.classList.remove('opacity-70');
+            }
+
+
+            if (audioPlayer.src) {
+                URL.revokeObjectURL(audioPlayer.src);
+                audioPlayer.src = '';
+            }
+
+            audioChunks = [];
+            totalRecordingDuration = 0;
+
+            updateStatusDisplay('<span class="flex items-center"><svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>Ready to record</span>');
+
+            // Reset button to initial primary style (indigo)
+            if(recordButton) {
+                recordButton.classList.remove('bg-red-600', 'hover:bg-red-500', 'focus-visible:outline-red-600'); // Remove red styles if applied
+                recordButton.classList.add('bg-indigo-600', 'hover:bg-indigo-500', 'focus-visible:outline-indigo-600');
+                recordButton.innerHTML = `
+                    <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a.75.75 0 000 1.5h6a.75.75 0 000-1.5H7z" clip-rule="evenodd" />
+                    </svg>
+                    Start Recording
+                `;
+            }
+
+
+            timeDisplay.textContent = '00:00 / 00:00';
+            timer.textContent = '00:00';
+            timer.classList.add('hidden');
+
+            mediaRecorder = null;
+
+            isResetting = false;
+        }
+
+        // Event listeners for audio player
+        if(audioPlayer) {
+            audioPlayer.addEventListener('loadedmetadata', function() {
+                if (!isNaN(this.duration) && isFinite(this.duration) && this.duration > 0) {
+                    updateTimeDisplay(0, this.duration);
+                } else {
+                    updateTimeDisplay(0, totalRecordingDuration);
+                }
+            });
+
+            audioPlayer.addEventListener('timeupdate', function() {
+                const duration = (!isNaN(this.duration) && isFinite(this.duration) && this.duration > 0)
+                    ? this.duration
+                    : totalRecordingDuration;
+                updateTimeDisplay(this.currentTime, duration);
+            });
+        }
+
+
+        if(recordButton) {
+            recordButton.addEventListener('click', async () => {
+                if (isResetting || recordButton.disabled) return; // Check disabled state too
+
+                try {
+                    if (mediaRecorder && mediaRecorder.state === 'recording') {
+                        // Stop recording
+                        mediaRecorder.stop();
+                        clearInterval(timerInterval);
+
+                        updateStatusDisplay('<span class="flex items-center"><svg class="animate-spin mr-2 h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Processing recording...</span>');
+                        return;
+                    }
+
+                    // Start new recording
+                    // Explicit check for mediaDevices availability in secure context
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        throw new Error('MediaDevices API not available. Ensure the page is served over HTTPS or localhost.');
+                    }
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    audioChunks = [];
+                    // Use the determined MIME type
+                    const options = { mimeType: selectedMimeType };
+                    try {
+                        // Attempt to create MediaRecorder with preferred options
+                        mediaRecorder = new MediaRecorder(stream, options);
+                        console.log(`Successfully created MediaRecorder with options:`, options);
+                    } catch (instantiationError) {
+                        // If creating with preferred options fails for any reason, try the fallback
+                        console.warn(`Failed to create MediaRecorder with preferred options (${selectedMimeType}):`, instantiationError.message);
+                        // Fallback: Try without specifying mimeType, let browser choose default
+                        try {
+                            console.log('Attempting fallback to browser default mimeType...');
+                            mediaRecorder = new MediaRecorder(stream);
+                            const actualMimeType = mediaRecorder.mimeType || 'audio/webm'; // Get the actual default
+                            console.log(`Successfully created MediaRecorder with browser default mimeType: ${actualMimeType}`);
+                            // Update state to reflect the actual used mimeType and extension
+                            selectedMimeType = actualMimeType;
+                            if (selectedMimeType.includes('mp4')) selectedFileExtension = 'mp4';
+                            else if (selectedMimeType.includes('aac')) selectedFileExtension = 'aac';
+                            else if (selectedMimeType.includes('ogg')) selectedFileExtension = 'ogg';
+                            else selectedFileExtension = 'webm'; // Default fallback extension
+                        } catch (fallbackError) {
+                            console.error('Failed to create MediaRecorder even with browser default:', fallbackError);
+                            // Show specific error for fallback failure
+                            showError(`Recording failed: Browser could not initialize recorder with default settings. (${fallbackError.message})`);
+                            return; // Stop execution here if fallback fails
+                        }
+                    }
+
+                    // --- Event Listeners (should only be added if mediaRecorder was successfully created) ---
+                    mediaRecorder.addEventListener('dataavailable', event => {
+                        audioChunks.push(event.data);
+                    });
+
+                    mediaRecorder.addEventListener('stop', () => {
+                        if (isResetting) return;
+
+                        // Use the determined MIME type for Blob and File
+                        const audioBlob = new Blob(audioChunks, { type: selectedMimeType });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        audioPlayer.src = audioUrl;
+
+                        // Update duration input for the form
+                        durationInput.value = totalRecordingDuration;
+
+                        // Create a File object from the Blob and set it to the hidden input
+                        // Use the determined file extension and MIME type
+                        const fileName = `recording.${selectedFileExtension}`;
+                        const audioFile = new File([audioBlob], fileName, { type: selectedMimeType });
+                        console.log(`Created file: ${fileName}, type: ${selectedMimeType}`);
+
+
+                        // Use DataTransfer to set the file to the file input element
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(audioFile);
+                        audioFileInput.files = dataTransfer.files;
+
+                        updateTimeDisplay(0, totalRecordingDuration);
+
+                        audioPreview.classList.remove('hidden');
+                        updateStatusDisplay('Recording complete');
+
+                        // Update button to "Start New Recording" style (primary indigo)
+                        recordButton.classList.remove('bg-red-600', 'hover:bg-red-500', 'focus-visible:outline-red-600');
+                        recordButton.classList.add('bg-indigo-600', 'hover:bg-indigo-500', 'focus-visible:outline-indigo-600');
+                        recordButton.innerHTML = `
+                            <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd" />
+                            </svg>
+                            Start New Recording
+                        `;
+
+                        // Clean up stream tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    });
+
+                    // Start recording
+                    mediaRecorder.start(100); // Start with a small timeslice
+                    startTime = Date.now();
+                    totalRecordingDuration = 0;
+                    timerInterval = setInterval(updateTimer, 1000);
+                    timer.classList.remove('hidden');
+
+                    // Update button to "Stop Recording" style (red)
+                    recordButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-500', 'focus-visible:outline-indigo-600');
+                    recordButton.classList.add('bg-red-600', 'hover:bg-red-500', 'focus-visible:outline-red-600');
+                    recordButton.innerHTML = `
+                        <svg class="-ml-0.5 size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                           <path fill-rule="evenodd" d="M2 10a8 8 0 1116 0 8 8 0 01-16 0zm5-2.25A.75.75 0 017.75 7h4.5a.75.75 0 010 1.5h-4.5A.75.75 0 017 7.75z" clip-rule="evenodd" />
+                        </svg>
+                        Stop Recording
+                    `;
+                    updateStatusDisplay('<span class="flex items-center"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 9a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>Recording in progress...</span>', true);
+                    errorDisplay.classList.add('hidden'); // Hide previous errors
+
+                } catch (err) { // Outer catch for getUserMedia or other unexpected errors during setup
+                    // Display the raw error message to understand the exact issue
+                    console.error("Outer catch error:", err); // Log the full error object for details
+                    showError('Error during recording setup: ' + err.message);
+                }
+            });
+        }
+
+
+        // Submit form validation
+        if(audioUploadForm) {
+            audioUploadForm.addEventListener('submit', function(e) {
+                if (audioFileInput.files.length === 0) {
+                    e.preventDefault();
+                    showError('Please record audio before submitting');
+                    return false;
+                }
+
+                // Show uploading status
+                updateStatusDisplay('<span class="flex items-center"><svg class="animate-spin mr-2 h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Uploading...</span>');
+                if(uploadButton) uploadButton.disabled = true;
+                if(uploadButton) uploadButton.classList.add('opacity-70');
+
+                // Form will be submitted normally
+                return true;
+            });
+        }
+
+
+        // Button event listeners
+        if(discardButton) discardButton.addEventListener('click', resetUI);
+
+        // Initialize UI
+        resetUI();
+    });
+</script>
+{% endblock %}
